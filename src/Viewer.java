@@ -100,7 +100,10 @@ public class Viewer {
       JMenuBar menuBar = new JMenuBar();
 
       JMenu fileMenu = createFileMenu(controller);
+      JMenu formatMenu = createFormatMenu(controller);
+
       menuBar.add(fileMenu);
+      menuBar.add(formatMenu);
 
       return menuBar;
     }
@@ -155,6 +158,20 @@ public class Viewer {
       fileMenu.add(closeProgram);
 
       return fileMenu;
+    }
+
+
+    private JMenu createFormatMenu(Controller controller) {
+      JMenuItem chooseFontWindow = new JMenuItem("Font", new ImageIcon(""));
+      chooseFontWindow.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+      chooseFontWindow.addActionListener(controller);
+      chooseFontWindow.setActionCommand("Open_Font_Window");
+
+      JMenu formatMenu = new JMenu("Format");
+      formatMenu.setMnemonic('F');
+      formatMenu.add(chooseFontWindow);
+
+      return formatMenu;
     }
 
     public void update(String text) {
