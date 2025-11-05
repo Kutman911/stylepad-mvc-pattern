@@ -13,6 +13,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 import javax.swing.BorderFactory;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 
 public class Viewer {
@@ -25,7 +27,7 @@ public class Viewer {
     }
 
     private void createGUI(Controller controller) {
-      
+
       UIManager.put("MenuBar.background", new Color(255, 204, 232));
       UIManager.put("MenuBar.foreground", Color.WHITE);
       UIManager.put("MenuBar.border", BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(255, 105, 180)));
@@ -49,6 +51,35 @@ public class Viewer {
       textArea.setSelectedTextColor(Color.WHITE);
       textArea.setSelectionColor(new Color(255, 105, 180));
       textArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(6, 6, 6, 6, new Color(255, 204, 232)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+      textArea.setLineWrap(true);
+      textArea.setWrapStyleWord(true);
+
+      textArea.getDocument().addDocumentListener(new DocumentListener() {
+      private void changedUpdate() {
+        String text = textArea.getText();
+        char unicodeSymbol = text.charAt(text.length() - 1);
+        if (text.isEmpty()) {
+          return;
+        } else if((unicodeSymbol >= 65 && unicodeSymbol <= 90 || unicodeSymbol == ' ') ||
+                    unicodeSymbol >= 97 && unicodeSymbol <= 122 || unicodeSymbol == ' ') {
+                      textArea.setFont(fontTextArea);
+        } else {
+          textArea.setFont(new Font("Arial", Font.PLAIN, 18));
+        }
+      }
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        changedUpdate();
+      }
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+
+      }
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+
+      }
+    });
 
       JScrollPane scrollPane = new JScrollPane(textArea);
       scrollPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2, new Color(255, 105, 180)));
