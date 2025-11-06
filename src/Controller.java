@@ -62,6 +62,8 @@ public class Controller implements ActionListener {
         String text = viewer.contentTextArea();
         saveToFile(file, text);
       }
+    } else if(command.equals("Font")) {
+      viewer.showFontDialog();
     }
   }
 
