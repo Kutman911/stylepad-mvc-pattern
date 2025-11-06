@@ -1,25 +1,29 @@
-import javax.swing.JFrame;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
 import java.awt.Font;
 import java.awt.Color;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
-import javax.swing.ImageIcon;
-import javax.swing.JSeparator;
+import java.io.File;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class Viewer {
 
   private JTextArea textArea;
+  private JFileChooser fileChooser;
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -127,7 +131,7 @@ public class Viewer {
 
       JMenuItem saveAsDocument = new JMenuItem("Save As ...", new ImageIcon("images/save_as.gif"));
       saveAsDocument.addActionListener(controller);
-      saveAsDocument.setActionCommand("Save_Document");
+      saveAsDocument.setActionCommand("SaveAs_Document");
 
       JMenuItem printDocument = new JMenuItem("Print ...", new ImageIcon("images/print.gif"));
       printDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
@@ -189,5 +193,49 @@ public class Viewer {
       viewer.setFontSettings(fontName, style, fontSize);
       dispose();
     }
+    public File showFileDialog(String status) {
 
+        if (fileChooser == null) {
+          fileChooser = new JFileChooser();
+
+          FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("Text Files (*.txt)", "txt");
+          FileNameExtensionFilter docxFilter = new FileNameExtensionFilter("Word Documents (*.docx)", "docx");
+          FileNameExtensionFilter jsonFilter = new FileNameExtensionFilter("JSON Files (*.json)", "json");
+          FileNameExtensionFilter allFilter = new FileNameExtensionFilter("All Files (*.*)", "*");
+
+          fileChooser.addChoosableFileFilter(txtFilter);
+          fileChooser.addChoosableFileFilter(docxFilter);
+          fileChooser.addChoosableFileFilter(jsonFilter);
+          fileChooser.addChoosableFileFilter(allFilter);
+
+          fileChooser.setFileFilter(txtFilter);
+        }
+
+        int returnValue;
+        if (status.equals("Open")) {
+          returnValue = fileChooser.showOpenDialog(null);
+        } else {
+          returnValue = fileChooser.showSaveDialog(null);
+        }
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+          File file = fileChooser.getSelectedFile();
+
+          FileNameExtensionFilter filter = (FileNameExtensionFilter) fileChooser.getFileFilter();
+          String ext = filter.getExtensions()[0];
+
+          if (!file.getName().toLowerCase().endsWith("." + ext)) {
+            file = new File(file.getAbsolutePath() + "." + ext);
+          }
+
+          return file;
+        }
+
+        return null;
+      }
+
+
+      public String contentTextArea() {
+        return textArea.getText();
+      }
 }
