@@ -18,7 +18,7 @@ public void actionPerformed(ActionEvent event) {
   String command = event.getActionCommand();
 
   if (command.equals("New_Document")) {
-    File file = viewer.showFileDialog("Save");
+    File file = viewer.showFileDialog("New");
 
 } else if (command.equals("Save_Document")) {
     if (currentFile != null) {
