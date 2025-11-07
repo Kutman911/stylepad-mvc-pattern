@@ -20,6 +20,10 @@ import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.print.PrinterJob;
+import java.awt.print.PrinterException;
+import javax.swing.Icon;
+import javax.swing.JOptionPane;
 
 
 public class Viewer {
@@ -28,6 +32,7 @@ public class Viewer {
   private JFileChooser fileChooser;
   private JDialog dialog;
   private JFrame frame;
+  private Icon icon;
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -195,17 +200,17 @@ public class Viewer {
       textArea.setText(text);
     }
 
-    private void applyFont() {
-      String fontName = (String) fontBox.getSelectedItem();
-      int fontSize = (Integer) sizeBox.getSelectedItem();
+    //private void applyFont() {
+      //String fontName = (String) fontBox.getSelectedItem();
+      //int fontSize = (Integer) sizeBox.getSelectedItem();
 
-      int style = Font.PLAIN;
-      if (boldCheck.isSelected()) style |= Font.BOLD;
-      if (italicCheck.isSelected()) style |= Font.ITALIC;
+      //int style = Font.PLAIN;
+      //if (boldCheck.isSelected()) style |= Font.BOLD;
+      //if (italicCheck.isSelected()) style |= Font.ITALIC;
 
-      viewer.setFontSettings(fontName, style, fontSize);
-      dispose();
-    }
+      //viewer.setFontSettings(fontName, style, fontSize);
+      //dispose();
+    //}
 
     public File showFileDialog(String status) {
 
@@ -291,5 +296,32 @@ public class Viewer {
 
     public String contentTextArea() {
         return textArea.getText();
+    }
+
+    public void printDocument() {
+      String content = textArea.getText();
+      PrintDocument printDocument = new PrintDocument(content);
+      PrinterJob job = PrinterJob.getPrinterJob();
+      job.setPrintable(printDocument);
+      boolean ok = job.printDialog();
+      if (ok) {
+        try {
+          job.print();
+          showResultPrintDocument();
+        } catch (PrinterException ex) {
+
+        }
+      }
+    }
+
+    private void showResultPrintDocument() {
+      if(icon == null) {
+        icon = new ImageIcon(getClass().getResource("/images/duke_printer.png"));
+      }
+      JOptionPane.showMessageDialog(null,
+      "The document has been successfully printed",
+      "Printer Document Dialog - Stilepad MVC Pattern",
+      JOptionPane.INFORMATION_MESSAGE,
+      icon);
     }
 }

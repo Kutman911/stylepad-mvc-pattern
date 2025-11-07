@@ -60,7 +60,11 @@ public class Controller implements ActionListener {
 
     } else if (command.equals("Font")) {
       viewer.showFontDialog();
+
+    } else if (command.equals("Print_Document")) {
+      viewer.printDocument();
     }
+
   }
 
   private boolean saveToFile(File file, String text) {
