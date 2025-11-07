@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import javax.swing.Timer;
 import java.util.Optional;
 import java.io.FileInputStream;
-
+import java.io.BufferedInputStream;
 
 public class Controller implements ActionListener {
 
@@ -26,28 +26,32 @@ public class Controller implements ActionListener {
 
   public void actionPerformed(ActionEvent event) {
     String command = event.getActionCommand();
-    if(command.equals("Open_Document")) {
-      Optional<File> fileOptional = viewer.showFileDialog();
+    if (command.equals("Open_Document")) {
+      currentFile = viewer.showFileDialog("Open");
 
-      if(fileOptional.isPresent()) {
-        File file = fileOptional.get();
-        FileInputStream in = null;
+      if (currentFile != null) {
+        FileInputStream fileInputStream = null;
+        BufferedInputStream bufferedInputStream = null;
+        StringBuilder container = new StringBuilder();
         try {
-          in = new FileInputStream(file);
-          StringBuilder container = new StringBuilder();
+          fileInputStream = new FileInputStream(currentFile);
+          bufferedInputStream = new BufferedInputStream(fileInputStream);
           int unicode = -1;
-          while ((unicode = in.read()) != -1) {
+          while ((unicode = bufferedInputStream.read()) != -1) {
             char symbol = (char) unicode;
             container.append(symbol);
           }
+
           viewer.update(container.toString());
+
         } catch (IOException ioe) {
-          System.out.println(ioe);
+          System.out.println("Error file: " + ioe);
         } finally {
           try {
-            in.close();
+            fileInputStream.close();
+            bufferedInputStream.close();
           } catch (IOException ioe) {
-            System.out.println(ioe);
+            System.out.println("Error closing file: " + ioe);
           }
         }
       }

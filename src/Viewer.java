@@ -200,17 +200,17 @@ public class Viewer {
       textArea.setText(text);
     }
 
-    private void applyFont() {
-      String fontName = (String) fontBox.getSelectedItem();
-      int fontSize = (Integer) sizeBox.getSelectedItem();
-
-      int style = Font.PLAIN;
-      if (boldCheck.isSelected()) style |= Font.BOLD;
-      if (italicCheck.isSelected()) style |= Font.ITALIC;
-
-      viewer.setFontSettings(fontName, style, fontSize);
-      dispose();
-    }
+    // private void applyFont() {
+    //   String fontName = (String) fontBox.getSelectedItem();
+    //   int fontSize = (Integer) sizeBox.getSelectedItem();
+    //
+    //   int style = Font.PLAIN;
+    //   if (boldCheck.isSelected()) style |= Font.BOLD;
+    //   if (italicCheck.isSelected()) style |= Font.ITALIC;
+    //
+    //   viewer.setFontSettings(fontName, style, fontSize);
+    //   dispose();
+    // }
 
     public File showFileDialog(String status) {
 
