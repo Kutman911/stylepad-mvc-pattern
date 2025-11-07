@@ -14,6 +14,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.JDialog;
+import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -26,6 +28,8 @@ public class Viewer {
 
   private JTextArea textArea;
   private JFileChooser fileChooser;
+  private JDialog dialog;
+  private JFrame frame;
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -44,6 +48,10 @@ public class Viewer {
       UIManager.put("MenuItem.selectionForeground", Color.WHITE);
       UIManager.put("MenuItem.background", new Color(255, 228, 240));
       UIManager.put("MenuItem.foreground", new Color(199, 21, 133));
+      UIManager.put("Panel.background", new Color(255, 228, 240));
+      UIManager.put("OptionPane.background", new Color(255, 228, 240));
+      UIManager.put("Button.background", new Color(255, 204, 232));
+      UIManager.put("Button.foreground", new Color(199, 21, 133));
 
       JMenuBar menuBar = createJMenuBar(controller);
 
@@ -93,9 +101,9 @@ public class Viewer {
 
 
 
-      JFrame frame = new JFrame("StylePad MVC Pattern");
-      frame.setSize(500, 500);
-      frame.setLocation(320, 140);
+      frame = new JFrame("StylePad MVC Pattern");
+      frame.setSize(700, 600);
+      frame.setLocationRelativeTo(null);
       frame.setJMenuBar(menuBar);
       frame.add("Center", scrollPane);
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -169,17 +177,22 @@ public class Viewer {
 
 
     private JMenu createFormatMenu(Controller controller) {
-      JMenuItem chooseFontWindow = new JMenuItem("Font", new ImageIcon(""));
-      chooseFontWindow.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
-      chooseFontWindow.addActionListener(controller);
-      chooseFontWindow.setActionCommand("Open_Font_Window");
-
       JMenu formatMenu = new JMenu("Format");
+
+      JMenuItem wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));
+      wrapJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+
+      JMenuItem fontJMenuItem = new JMenuItem("Font", new ImageIcon(""));
+      fontJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+      fontJMenuItem.addActionListener(controller);
+      fontJMenuItem.setActionCommand("Font");
+
       formatMenu.setMnemonic('F');
-      formatMenu.add(chooseFontWindow);
+      formatMenu.add(wrapJMenuItem);
+      formatMenu.add(fontJMenuItem);
 
       return formatMenu;
-    }
+  }
 
     public void update(String text) {
       textArea.setText(text);
@@ -196,6 +209,11 @@ public class Viewer {
       viewer.setFontSettings(fontName, style, fontSize);
       dispose();
     }
+<<<<<<< HEAD
+=======
+
+    public File showFileDialog(String status) {
+>>>>>>> d910f8a7b19d145531addf6ad09d5e3ff0a216d5
 
     public String contentTextArea() {
       return textArea.getText();
@@ -212,4 +230,51 @@ public class Viewer {
       return null;
     }
 
+<<<<<<< HEAD
+=======
+    public void showFontDialog() {
+      int x = frame.getX();
+      int y = frame.getY();
+
+      if (dialog == null) {
+
+        dialog = new JDialog(frame, "Font", true);
+
+        JButton buttonOk = new JButton("OK");
+        buttonOk.setBounds(250, 400, 100, 50);
+        buttonOk.setFocusPainted(false);
+        buttonOk.addActionListener(
+            (eventButton) -> {
+              // !!!!!!!!
+              Font fontTextArea = new Font("Arial", Font.PLAIN, 16);
+              textArea.setFont(fontTextArea);
+              dialog.setVisible(false);
+            });
+
+        JButton buttonCancel = new JButton("Cancel");
+        buttonCancel.setBounds(370, 400, 100, 50);
+        buttonCancel.setFocusPainted(false);
+
+        buttonCancel.addActionListener(
+            (eventButton) -> {
+              dialog.setVisible(false);
+            });
+
+        dialog.setSize(500, 500);
+        dialog.setLocation(x + 100, y + 50);
+        dialog.setResizable(false);
+        dialog.setLayout(null);
+        dialog.add(buttonOk);
+        dialog.add(buttonCancel);
+        dialog.setVisible(true);
+      } else {
+        dialog.setLocation(x + 100, y + 50);
+        dialog.setVisible(true);
+      }
+    }
+
+    public String contentTextArea() {
+        return textArea.getText();
+    }
+>>>>>>> d910f8a7b19d145531addf6ad09d5e3ff0a216d5
 }

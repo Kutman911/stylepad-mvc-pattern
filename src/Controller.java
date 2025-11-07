@@ -13,23 +13,17 @@ public class Controller implements ActionListener {
 
   private Viewer viewer;
   private File currentFile;
-  private long lastModifiedTs = -1;
+  private long lastModifiedTs;
+  private Timer syncTimer;
 
   public Controller(Viewer viewer) {
     this.viewer = viewer;
+    lastModifiedTs = -1;
 
-    new Timer(2000, e -> {
-      if (currentFile != null && currentFile.exists()) {
-        long ts = currentFile.lastModified();
-        if (ts != lastModifiedTs) {
-          System.out.println("File was updated: " + currentFile.getName());
-          lastModifiedTs = ts;
-        }
-      }
-    }).start();
+    syncTimer = new Timer(2000, new SyncTimerListener());
+    syncTimer.start();
   }
 
-  @Override
   public void actionPerformed(ActionEvent event) {
     String command = event.getActionCommand();
     if(command.equals("Open_Document")) {
@@ -83,6 +77,7 @@ public class Controller implements ActionListener {
           }
         }
       }
+
     } else if (command.equals("SaveAs_Document")) {
       File file = viewer.showFileDialog("Save");
       if (file != null) {
@@ -90,12 +85,14 @@ public class Controller implements ActionListener {
         String text = viewer.contentTextArea();
         saveToFile(file, text);
       }
+
+    } else if (command.equals("Font")) {
+      viewer.showFontDialog();
     }
   }
 
   private boolean saveToFile(File file, String text) {
     PrintWriter out = null;
-
     try {
       out = new PrintWriter(new FileWriter(file));
       out.println(text);
@@ -108,6 +105,18 @@ public class Controller implements ActionListener {
     } finally {
       if (out != null) {
         out.close();
+      }
+    }
+  }
+
+  private class SyncTimerListener implements ActionListener {
+    public void actionPerformed(ActionEvent e) {
+      if (currentFile != null && currentFile.exists()) {
+        long ts = currentFile.lastModified();
+        if (ts != lastModifiedTs) {
+          System.out.println("File was updated: " + currentFile.getName());
+          lastModifiedTs = ts;
+        }
       }
     }
   }
