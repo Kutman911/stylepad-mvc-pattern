@@ -20,17 +20,11 @@ import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-<<<<<<< HEAD
 import java.awt.print.PrinterJob;
 import java.awt.print.PrinterException;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
-=======
-import javax.swing.JFileChooser;
-import java.io.File;
-import java.util.Optional;
->>>>>>> f80688165ac2ea91e9c86a5f9e97364a26880f53
 
 public class Viewer {
 
@@ -42,7 +36,6 @@ public class Viewer {
 
     public Viewer() {
       Controller controller = new Controller(this);
-      fileChooser = new JFileChooser();
       createGUI(controller);
     }
 
@@ -207,52 +200,59 @@ public class Viewer {
       textArea.setText(text);
     }
 
-<<<<<<< HEAD
-    //private void applyFont() {
-      //String fontName = (String) fontBox.getSelectedItem();
-      //int fontSize = (Integer) sizeBox.getSelectedItem();
-=======
     private void applyFont() {
-      //String fontName = (String) fontBox.getSelectedItem();
+      String fontName = (String) fontBox.getSelectedItem();
       int fontSize = (Integer) sizeBox.getSelectedItem();
->>>>>>> f80688165ac2ea91e9c86a5f9e97364a26880f53
 
-      //int style = Font.PLAIN;
-      //if (boldCheck.isSelected()) style |= Font.BOLD;
-      //if (italicCheck.isSelected()) style |= Font.ITALIC;
+      int style = Font.PLAIN;
+      if (boldCheck.isSelected()) style |= Font.BOLD;
+      if (italicCheck.isSelected()) style |= Font.ITALIC;
 
-<<<<<<< HEAD
-      //viewer.setFontSettings(fontName, style, fontSize);
-      //dispose();
-    //}
-=======
       viewer.setFontSettings(fontName, style, fontSize);
       dispose();
     }
-<<<<<<< HEAD
-=======
->>>>>>> f80688165ac2ea91e9c86a5f9e97364a26880f53
 
     public File showFileDialog(String status) {
->>>>>>> d910f8a7b19d145531addf6ad09d5e3ff0a216d5
 
-    public String contentTextArea() {
-      return textArea.getText();
-    }
+        if (fileChooser == null) {
+          fileChooser = new JFileChooser();
 
+          FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("Text Files (*.txt)", "txt");
+          FileNameExtensionFilter docxFilter = new FileNameExtensionFilter("Word Documents (*.docx)", "docx");
+          FileNameExtensionFilter jsonFilter = new FileNameExtensionFilter("JSON Files (*.json)", "json");
+          FileNameExtensionFilter allFilter = new FileNameExtensionFilter("All Files (*.*)", "*");
 
-    public Optional<File> showFileDialog() {
-      int returnValue = fileChooser.showOpenDialog(null);
-      if(returnValue == JFileChooser.APPROVE_OPTION) {
-        File file = fileChooser.getSelectedFile();
-        Optional<File> optionalFile = Optional.of(file);
-        return optionalFile;
+          fileChooser.addChoosableFileFilter(txtFilter);
+          fileChooser.addChoosableFileFilter(docxFilter);
+          fileChooser.addChoosableFileFilter(jsonFilter);
+          fileChooser.addChoosableFileFilter(allFilter);
+
+          fileChooser.setFileFilter(txtFilter);
+        }
+
+        int returnValue;
+        if (status.equals("Open")) {
+          returnValue = fileChooser.showOpenDialog(null);
+        } else {
+          returnValue = fileChooser.showSaveDialog(null);
+        }
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+          File file = fileChooser.getSelectedFile();
+
+          FileNameExtensionFilter filter = (FileNameExtensionFilter) fileChooser.getFileFilter();
+          String ext = filter.getExtensions()[0];
+
+          if (!file.getName().toLowerCase().endsWith("." + ext)) {
+            file = new File(file.getAbsolutePath() + "." + ext);
+          }
+
+          return file;
+        }
+
+        return null;
       }
-      return null;
-    }
 
-<<<<<<< HEAD
-=======
     public void showFontDialog() {
       int x = frame.getX();
       int y = frame.getY();
@@ -297,7 +297,6 @@ public class Viewer {
     public String contentTextArea() {
         return textArea.getText();
     }
-<<<<<<< HEAD
 
     public void printDocument() {
       String content = textArea.getText();
@@ -325,7 +324,4 @@ public class Viewer {
       JOptionPane.INFORMATION_MESSAGE,
       icon);
     }
-=======
->>>>>>> d910f8a7b19d145531addf6ad09d5e3ff0a216d5
->>>>>>> f80688165ac2ea91e9c86a5f9e97364a26880f53
 }
