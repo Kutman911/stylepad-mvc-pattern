@@ -18,7 +18,9 @@ import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
+import javax.swing.JFileChooser;
+import java.io.File;
+import java.util.Optional;
 
 public class Viewer {
 
@@ -27,6 +29,7 @@ public class Viewer {
 
     public Viewer() {
       Controller controller = new Controller(this);
+      fileChooser = new JFileChooser();
       createGUI(controller);
     }
 
@@ -183,7 +186,7 @@ public class Viewer {
     }
 
     private void applyFont() {
-      String fontName = (String) fontBox.getSelectedItem();
+      //String fontName = (String) fontBox.getSelectedItem();
       int fontSize = (Integer) sizeBox.getSelectedItem();
 
       int style = Font.PLAIN;
@@ -193,49 +196,20 @@ public class Viewer {
       viewer.setFontSettings(fontName, style, fontSize);
       dispose();
     }
-    public File showFileDialog(String status) {
 
-        if (fileChooser == null) {
-          fileChooser = new JFileChooser();
+    public String contentTextArea() {
+      return textArea.getText();
+    }
 
-          FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("Text Files (*.txt)", "txt");
-          FileNameExtensionFilter docxFilter = new FileNameExtensionFilter("Word Documents (*.docx)", "docx");
-          FileNameExtensionFilter jsonFilter = new FileNameExtensionFilter("JSON Files (*.json)", "json");
-          FileNameExtensionFilter allFilter = new FileNameExtensionFilter("All Files (*.*)", "*");
 
-          fileChooser.addChoosableFileFilter(txtFilter);
-          fileChooser.addChoosableFileFilter(docxFilter);
-          fileChooser.addChoosableFileFilter(jsonFilter);
-          fileChooser.addChoosableFileFilter(allFilter);
-
-          fileChooser.setFileFilter(txtFilter);
-        }
-
-        int returnValue;
-        if (status.equals("Open")) {
-          returnValue = fileChooser.showOpenDialog(null);
-        } else {
-          returnValue = fileChooser.showSaveDialog(null);
-        }
-
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-          File file = fileChooser.getSelectedFile();
-
-          FileNameExtensionFilter filter = (FileNameExtensionFilter) fileChooser.getFileFilter();
-          String ext = filter.getExtensions()[0];
-
-          if (!file.getName().toLowerCase().endsWith("." + ext)) {
-            file = new File(file.getAbsolutePath() + "." + ext);
-          }
-
-          return file;
-        }
-
-        return null;
+    public Optional<File> showFileDialog() {
+      int returnValue = fileChooser.showOpenDialog(null);
+      if(returnValue == JFileChooser.APPROVE_OPTION) {
+        File file = fileChooser.getSelectedFile();
+        Optional<File> optionalFile = Optional.of(file);
+        return optionalFile;
       }
+      return null;
+    }
 
-
-      public String contentTextArea() {
-        return textArea.getText();
-      }
 }
