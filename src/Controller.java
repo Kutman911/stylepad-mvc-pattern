@@ -95,8 +95,10 @@ public class Controller implements ActionListener {
 
     } else if (command.equals("Print_Document")) {
       viewer.printDocument();
+    } else if (command.equals("Exit")) {
+            System.out.println("Exiting application");
+            System.exit(0);
     }
-
   }
 
   private boolean saveToFile(File file, String text) {
