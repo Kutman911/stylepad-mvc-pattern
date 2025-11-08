@@ -2,6 +2,9 @@ import java.awt.Font;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -110,6 +113,8 @@ public class Viewer {
       frame.add("Center", scrollPane);
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.setVisible(true);
+      Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
+      textArea.setFont(fontTextArea);
 
     }
 
@@ -200,17 +205,13 @@ public class Viewer {
       textArea.setText(text);
     }
 
-    // private void applyFont() {
-    //   String fontName = (String) fontBox.getSelectedItem();
-    //   int fontSize = (Integer) sizeBox.getSelectedItem();
-    //
-    //   int style = Font.PLAIN;
-    //   if (boldCheck.isSelected()) style |= Font.BOLD;
-    //   if (italicCheck.isSelected()) style |= Font.ITALIC;
-    //
-    //   viewer.setFontSettings(fontName, style, fontSize);
-    //   dispose();
-    // }
+    public void setFontSettings(String family, int style, int size) {
+      currentFontFamily = family;
+      currentFontStyle = style;
+      currentFontSize = size;
+      Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
+      textArea.setFont(newFont);
+    }
 
     public File showFileDialog(String status) {
 
