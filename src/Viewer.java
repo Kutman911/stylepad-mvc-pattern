@@ -33,6 +33,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JList;
 import javax.swing.JTextField;
 import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.awt.Image;
+
 
 public class Viewer {
 
@@ -178,6 +181,9 @@ public class Viewer {
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.setLayout(new GridBagLayout());
 
+      Image icon = Toolkit.getDefaultToolkit().getImage("images/duke_printer.png");
+      frame.setIconImage(icon);
+
       GridBagConstraints mainGbc = new GridBagConstraints();
       mainGbc.fill = GridBagConstraints.BOTH;
       mainGbc.weightx = 1.0;
@@ -221,9 +227,11 @@ public class Viewer {
       JMenuBar menuBar = new JMenuBar();
 
       JMenu fileMenu = createFileMenu(controller);
+      JMenu editMenu = createEditMenu(controller);
       JMenu formatMenu = createFormatMenu(controller);
 
       menuBar.add(fileMenu);
+      menuBar.add(editMenu);
       menuBar.add(formatMenu);
 
       return menuBar;
@@ -237,30 +245,31 @@ public class Viewer {
       newDocument.addActionListener(controller);
       newDocument.setActionCommand("New_Document");
 
-      JMenuItem openDocument = new JMenuItem("Open ...", new ImageIcon("images/open.gif"));
+      JMenuItem openDocument = new JMenuItem("Open ...", new ImageIcon("images/open.png"));
       openDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
       openDocument.addActionListener(controller);
       openDocument.setActionCommand("Open_Document");
-      JMenuItem saveDocument = new JMenuItem("Save", new ImageIcon("images/save.gif"));
+      JMenuItem saveDocument = new JMenuItem("Save", new ImageIcon("images/save.png"));
       saveDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
       saveDocument.addActionListener(controller);
       saveDocument.setActionCommand("Save_Document");
 
-      JMenuItem saveAsDocument = new JMenuItem("Save As ...", new ImageIcon("images/save_as.gif"));
+      JMenuItem saveAsDocument = new JMenuItem("Save As ...", new ImageIcon("images/save_as.png"));
       saveAsDocument.addActionListener(controller);
       saveAsDocument.setActionCommand("SaveAs_Document");
 
-      JMenuItem printDocument = new JMenuItem("Print ...", new ImageIcon("images/print.gif"));
+      JMenuItem printDocument = new JMenuItem("Print ...", new ImageIcon("images/print.png"));
       printDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
       printDocument.addActionListener(controller);
       printDocument.setActionCommand("Print_Document");
 
-      JMenuItem imageDocument = new JMenuItem("Open Image", new ImageIcon("images/wordSpace.gif"));
+      JMenuItem imageDocument = new JMenuItem("Open Image", new ImageIcon("images/image.png"));
       imageDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
       imageDocument.addActionListener(controller);
       imageDocument.setActionCommand("Open_Image");
 
       JMenuItem closeProgram = new JMenuItem("Exit");
+      imageDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
       closeProgram.addActionListener(controller);
       closeProgram.setActionCommand("Exit");
 
@@ -281,6 +290,67 @@ public class Viewer {
       return fileMenu;
     }
 
+    private JMenu createEditMenu(Controller controller) {
+
+      JMenuItem cutText = new JMenuItem("Cut",new ImageIcon("images/cut.png"));
+      cutText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+      cutText.addActionListener(controller);
+      cutText.setActionCommand("Cut_Text");
+
+      JMenuItem copyText = new JMenuItem("Copy", new ImageIcon("images/copy.png"));
+      copyText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+      copyText.addActionListener(controller);
+      copyText.setActionCommand("Copy_Text");
+
+      JMenuItem pasteText = new JMenuItem("Paste", new ImageIcon("images/paste.png"));
+      pasteText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+      pasteText.addActionListener(controller);
+      pasteText.setActionCommand("Paste_Text");
+
+      JMenuItem deleteText = new JMenuItem("Delete", new ImageIcon("images/delete.png"));
+      deleteText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+      deleteText.addActionListener(controller);
+      deleteText.setActionCommand("Delete_Text");
+
+      JMenuItem findText = new JMenuItem("Find", new ImageIcon("images/find.png"));
+      findText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+      findText.addActionListener(controller);
+      findText.setActionCommand("Find_Text");
+
+      JMenuItem goToLine = new JMenuItem("Go", new ImageIcon("images/go.png"));
+      goToLine.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
+      goToLine.addActionListener(controller);
+      goToLine.setActionCommand("Go_To_Line");
+
+      JMenuItem selectAllText = new JMenuItem("Open Image", new ImageIcon("images/select_all.png"));
+      selectAllText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+      selectAllText.addActionListener(controller);
+      selectAllText.setActionCommand("Select_All_Text");
+
+      JMenuItem timeAndDate = new JMenuItem("Time and date", new ImageIcon("images/time_and_date.png"));
+      timeAndDate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+      timeAndDate.addActionListener(controller);
+      timeAndDate.setActionCommand("Time_And_Date");
+
+
+
+
+      JMenu editMenu = new JMenu("Edit");
+      editMenu.setMnemonic('E');
+      editMenu.add(cutText);
+      editMenu.add(copyText);
+      editMenu.add(pasteText);
+      editMenu.add(deleteText);
+      editMenu.add(new JSeparator());
+      editMenu.add(findText);
+      editMenu.add(goToLine);
+      editMenu.add(new JSeparator());
+      editMenu.add(selectAllText);
+      editMenu.add(timeAndDate);
+
+      return editMenu;
+    }
+
 
     private JMenu createFormatMenu(Controller controller) {
       JMenu formatMenu = new JMenu("Format");
@@ -293,7 +363,7 @@ public class Viewer {
       fontJMenuItem.addActionListener(controller);
       fontJMenuItem.setActionCommand("Font");
 
-      formatMenu.setMnemonic('F');
+      formatMenu.setMnemonic('T');
       formatMenu.add(wrapJMenuItem);
       formatMenu.add(fontJMenuItem);
 
@@ -492,4 +562,5 @@ public class Viewer {
       JOptionPane.INFORMATION_MESSAGE,
       icon);
     }
+
 }
