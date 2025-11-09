@@ -43,7 +43,7 @@ public class Controller implements ActionListener {
           }
 
           viewer.update(container.toString());
-
+          lastModifiedTs = currentFile.lastModified();
         } catch (IOException ioe) {
           System.out.println("Error file: " + ioe);
         } finally {
@@ -55,9 +55,10 @@ public class Controller implements ActionListener {
           }
         }
       }
-    }
-    if (command.equals("New_Document")) {
-      File file = viewer.showFileDialog("New");
+    } else if (command.equals("New_Document")) {
+      currentFile = null;
+      viewer.update("");
+      lastModifiedTs = -1;
 
     } else if (command.equals("Save_Document")) {
       if (currentFile != null) {
