@@ -27,15 +27,24 @@ import java.awt.print.PrinterJob;
 import java.awt.print.PrinterException;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
-
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class Viewer {
 
-  private JTextArea textArea;
-  private JFileChooser fileChooser;
-  private JDialog dialog;
-  private JFrame frame;
-  private Icon icon;
+    private JTextArea textArea;
+    private JFileChooser fileChooser;
+    private JDialog dialog;
+    private JFrame frame;
+    private Icon icon;
+    private String currentFontFamily = "JetBrains Mono";
+    private int currentFontStyle = Font.PLAIN;
+    private int currentFontSize = 16;
+    private JPanel statusBar;
+    private JLabel charCountLabel;
+    private JLabel encodingLabel;
+    private JLabel zoomLabel;
+    private String currentEncoding = "UTF-8";
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -43,6 +52,10 @@ public class Viewer {
     }
 
     private void createGUI(Controller controller) {
+
+      currentFontFamily = "JetBrains Mono";
+      currentFontStyle = Font.PLAIN;
+      currentFontSize = 16;
 
       UIManager.put("MenuBar.background", new Color(255, 204, 232));
       UIManager.put("MenuBar.foreground", Color.WHITE);
@@ -74,36 +87,83 @@ public class Viewer {
       textArea.setLineWrap(true);
       textArea.setWrapStyleWord(true);
 
+      updateCharCountLabel();
+
       textArea.getDocument().addDocumentListener(new DocumentListener() {
-      private void changedUpdate() {
-        String text = textArea.getText();
-        char unicodeSymbol = text.charAt(text.length() - 1);
-        if (text.isEmpty()) {
-          return;
-        } else if((unicodeSymbol >= 65 && unicodeSymbol <= 90 || unicodeSymbol == ' ') ||
-                    unicodeSymbol >= 97 && unicodeSymbol <= 122 || unicodeSymbol == ' ') {
-                      textArea.setFont(fontTextArea);
-        } else {
-          textArea.setFont(new Font("Arial", Font.PLAIN, 18));
-        }
-      }
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        changedUpdate();
-      }
-      @Override
-      public void removeUpdate(DocumentEvent e) {
+            private void changedUpdateInternal() {
+                updateCharCountLabel();
 
-      }
-      @Override
-      public void changedUpdate(DocumentEvent e) {
+                String text = textArea.getText();
+                if (text.isEmpty()) {
+                    textArea.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+                    return;
+                }
 
-      }
-    });
+                char unicodeSymbol = text.charAt(text.length() - 1);
+
+                if ((unicodeSymbol >= 65 && unicodeSymbol <= 90 || unicodeSymbol == ' ') ||
+                    (unicodeSymbol >= 97 && unicodeSymbol <= 122)) {
+                    textArea.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+                } else {
+                  textArea.setFont(new Font("Arial", Font.PLAIN, 18));
+                }
+            }
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changedUpdateInternal();
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changedUpdateInternal();
+            }
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
 
       JScrollPane scrollPane = new JScrollPane(textArea);
       scrollPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2, new Color(255, 105, 180)));
 
+      statusBar = new JPanel(new GridBagLayout());
+      statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(255, 105, 180)));
+      statusBar.setBackground(new Color(255, 228, 240));
+
+      charCountLabel = new JLabel();
+      encodingLabel = new JLabel();
+      zoomLabel = new JLabel();
+
+
+      updateCharCountLabel();
+      updateEncodingLabel();
+      updateZoomLabel();
+
+      GridBagConstraints gbc = new GridBagConstraints();
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      gbc.insets = new Insets(2, 5, 2, 5);
+      gbc.weightx = 1.0;
+      gbc.anchor = GridBagConstraints.WEST;
+
+      gbc.gridx = 0;
+      statusBar.add(charCountLabel, gbc);
+
+      gbc.gridx = 1;
+      gbc.weightx = 0.0; // Не расширять
+      gbc.anchor = GridBagConstraints.CENTER;
+      statusBar.add(new JSeparator(JSeparator.VERTICAL), gbc);
+
+      gbc.gridx = 2;
+      gbc.weightx = 0.0;
+      gbc.anchor = GridBagConstraints.WEST;
+      statusBar.add(encodingLabel, gbc);
+
+      gbc.gridx = 3;
+      gbc.anchor = GridBagConstraints.CENTER;
+      statusBar.add(new JSeparator(JSeparator.VERTICAL), gbc);
+
+      gbc.gridx = 4;
+      gbc.weightx = 0.0;
+      gbc.anchor = GridBagConstraints.WEST;
+      statusBar.add(zoomLabel, gbc);
 
 
       frame = new JFrame("StylePad MVC Pattern");
@@ -112,10 +172,45 @@ public class Viewer {
       frame.setJMenuBar(menuBar);
       frame.add("Center", scrollPane);
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      frame.setVisible(true);
-      Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
-      textArea.setFont(fontTextArea);
+      frame.setLayout(new GridBagLayout());
 
+      GridBagConstraints mainGbc = new GridBagConstraints();
+      mainGbc.fill = GridBagConstraints.BOTH;
+      mainGbc.weightx = 1.0;
+      mainGbc.weighty = 1.0; // Занять все доступное пространство по вертикали
+      mainGbc.gridx = 0;
+      mainGbc.gridy = 0;
+      frame.add(scrollPane, mainGbc);
+
+      GridBagConstraints statusGbc = new GridBagConstraints();
+      statusGbc.fill = GridBagConstraints.HORIZONTAL;
+      statusGbc.weightx = 1.0;
+      statusGbc.weighty = 0.0; // Не расширять по вертикали
+      statusGbc.gridx = 0;
+      statusGbc.gridy = 1;
+      statusGbc.anchor = GridBagConstraints.SOUTH;
+      frame.add(statusBar, statusGbc);
+
+      frame.setVisible(true);
+    }
+
+    private void updateCharCountLabel() {
+        if (textArea != null && charCountLabel != null) {
+            int count = textArea.getText().length();
+            charCountLabel.setText("Символов: " + count);
+        }
+    }
+
+    public void updateEncodingLabel() {
+        if (encodingLabel != null) {
+            encodingLabel.setText("Кодировка: " + currentEncoding);
+        }
+    }
+
+    public void updateZoomLabel() {
+        if (zoomLabel != null) {
+            zoomLabel.setText("Масштаб: " + currentFontSize + "pt");
+        }
     }
 
     private JMenuBar createJMenuBar(Controller controller) {
@@ -211,6 +306,12 @@ public class Viewer {
       currentFontSize = size;
       Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
       textArea.setFont(newFont);
+      updateZoomLabel();
+    }
+
+     public void updateEncodingLabel(String encoding) {
+         this.currentEncoding = encoding;
+         updateEncodingLabel();
     }
 
     public File showFileDialog(String status) {
