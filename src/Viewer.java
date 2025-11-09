@@ -249,6 +249,7 @@ public class Viewer {
       openDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
       openDocument.addActionListener(controller);
       openDocument.setActionCommand("Open_Document");
+
       JMenuItem saveDocument = new JMenuItem("Save", new ImageIcon("images/save.png"));
       saveDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
       saveDocument.addActionListener(controller);
@@ -263,7 +264,7 @@ public class Viewer {
       printDocument.addActionListener(controller);
       printDocument.setActionCommand("Print_Document");
 
-      JMenuItem imageDocument = new JMenuItem("Open Image", new ImageIcon("images/image.png"));
+      JMenuItem imageDocument = new JMenuItem("Open Image", new ImageIcon("images/img.png"));
       imageDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
       imageDocument.addActionListener(controller);
       imageDocument.setActionCommand("Open_Image");
