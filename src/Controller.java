@@ -7,100 +7,34 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.swing.Timer;
-
+import java.util.HashMap;
+import java.util.Map;
 public class Controller implements ActionListener {
 
   private Viewer viewer;
   private File currentFile;
   private long lastModifiedTs;
   private Timer syncTimer;
+  private Map<String, CommandHandler> map;
 
   public Controller(Viewer viewer) {
     this.viewer = viewer;
     lastModifiedTs = -1;
     syncTimer = new Timer(2000, new SyncTimerListener());
     syncTimer.start();
+
+    map = new HashMap<>();
+    map.put("Save_Document", new SaveHandler());
   }
 
   public void actionPerformed(ActionEvent event) {
     String command = event.getActionCommand();
-
-    if (command.equals("Open_Document")) {
-      currentFile = viewer.showFileDialog("Open");
-      if (currentFile != null) {
-        try {
-          String content = readFile(currentFile);
-          viewer.update(content);
-          lastModifiedTs = currentFile.lastModified();
-        } catch (IOException ioe) {
-          System.out.println("Error file: " + ioe);
-        }
-      }
-
-    } else if (command.equals("New_Document")) {
-      currentFile = null;
-      viewer.update("");
-      lastModifiedTs = -1;
-
-    } else if (command.equals("Save_Document")) {
-      if (currentFile != null) {
-        String text = viewer.contentTextArea();
-        boolean saved = saveToFile(currentFile, text);
-        if (saved) {
-          System.out.println("Saved to file");
-        } else {
-          System.out.println("Failed to save to file");
-        }
-      } else {
-        File file = viewer.showFileDialog("Save");
-        if (file != null) {
-          currentFile = file;
-          String text = viewer.contentTextArea();
-          boolean saved = saveToFile(file, text);
-          if (saved) {
-            System.out.println("Saved to file");
-          } else {
-            System.out.println("Failed to save to file");
-          }
-        }
-      }
-
-    } else if (command.equals("SaveAs_Document")) {
-      File file = viewer.showFileDialog("Save");
-      if (file != null) {
-        currentFile = file;
-        String text = viewer.contentTextArea();
-        saveToFile(file, text);
-      }
-
-    } else if (command.equals("Print_Document")) {
-      viewer.printDocument();
-
-    } else if (command.equals("Font")) {
-      viewer.showFontDialog();
-
-    } else if (command.equals("Exit")) {
-      System.out.println("Exiting application");
-      System.exit(0);
+    CommandHandler object = map.get(command);
+    if (object != null) {
+      currentFile = viewer.showFileDialog("Save Document");
+      object.command();
     }
-  }
 
-  private boolean saveToFile(File file, String text) {
-    PrintWriter out = null;
-    try {
-      out = new PrintWriter(new FileWriter(file));
-      out.println(text);
-      out.flush();
-      lastModifiedTs = file.lastModified();
-      return true;
-    } catch (IOException ioe) {
-      System.out.println(ioe);
-      return false;
-    } finally {
-      if (out != null) {
-        out.close();
-      }
-    }
   }
 
   private String readFile(File file) throws IOException {

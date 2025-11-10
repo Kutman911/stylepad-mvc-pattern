@@ -107,37 +107,7 @@ public class Viewer {
 
       updateCharCountLabel();
 
-      textArea.getDocument().addDocumentListener(new DocumentListener() {
-            private void changedUpdateInternal() {
-                updateCharCountLabel();
-
-                String text = textArea.getText();
-                if (text.isEmpty()) {
-                    textArea.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
-                    return;
-                }
-
-                char unicodeSymbol = text.charAt(text.length() - 1);
-
-                if ((unicodeSymbol >= 65 && unicodeSymbol <= 90 || unicodeSymbol == ' ') ||
-                    (unicodeSymbol >= 97 && unicodeSymbol <= 122)) {
-                    textArea.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
-                } else {
-                  textArea.setFont(new Font("Arial", Font.PLAIN, 18));
-                }
-            }
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changedUpdateInternal();
-            }
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changedUpdateInternal();
-            }
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-            }
-        });
+    
 
       JScrollPane scrollPane = new JScrollPane(textArea);
       scrollPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2, new Color(255, 105, 180)));
