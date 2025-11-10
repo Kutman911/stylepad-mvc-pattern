@@ -13,7 +13,6 @@ public class OpenHandler extends CommandHandler {
 
   public OpenHandler(Viewer viewer) {
     this.viewer = viewer;
-    file = viewer.showFileDialog("Open");
     container = new StringBuilder();
   }
 
