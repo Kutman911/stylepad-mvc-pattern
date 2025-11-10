@@ -2,12 +2,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.swing.Timer;
-import java.util.Optional;
-import java.io.FileInputStream;
-import java.io.BufferedInputStream;
 
 public class Controller implements ActionListener {
 
@@ -19,42 +18,25 @@ public class Controller implements ActionListener {
   public Controller(Viewer viewer) {
     this.viewer = viewer;
     lastModifiedTs = -1;
-
     syncTimer = new Timer(2000, new SyncTimerListener());
     syncTimer.start();
   }
 
   public void actionPerformed(ActionEvent event) {
     String command = event.getActionCommand();
+
     if (command.equals("Open_Document")) {
       currentFile = viewer.showFileDialog("Open");
-
       if (currentFile != null) {
-        FileInputStream fileInputStream = null;
-        BufferedInputStream bufferedInputStream = null;
-        StringBuilder container = new StringBuilder();
         try {
-          fileInputStream = new FileInputStream(currentFile);
-          bufferedInputStream = new BufferedInputStream(fileInputStream);
-          int unicode = -1;
-          while ((unicode = bufferedInputStream.read()) != -1) {
-            char symbol = (char) unicode;
-            container.append(symbol);
-          }
-
-          viewer.update(container.toString());
+          String content = readFile(currentFile);
+          viewer.update(content);
           lastModifiedTs = currentFile.lastModified();
         } catch (IOException ioe) {
           System.out.println("Error file: " + ioe);
-        } finally {
-          try {
-            fileInputStream.close();
-            bufferedInputStream.close();
-          } catch (IOException ioe) {
-            System.out.println("Error closing file: " + ioe);
-          }
         }
       }
+
     } else if (command.equals("New_Document")) {
       currentFile = null;
       viewer.update("");
@@ -91,14 +73,15 @@ public class Controller implements ActionListener {
         saveToFile(file, text);
       }
 
+    } else if (command.equals("Print_Document")) {
+      viewer.printDocument();
+
     } else if (command.equals("Font")) {
       viewer.showFontDialog();
 
-    } else if (command.equals("Print_Document")) {
-      viewer.printDocument();
     } else if (command.equals("Exit")) {
-            System.out.println("Exiting application");
-            System.exit(0);
+      System.out.println("Exiting application");
+      System.exit(0);
     }
   }
 
@@ -120,13 +103,44 @@ public class Controller implements ActionListener {
     }
   }
 
+  private String readFile(File file) throws IOException {
+    FileInputStream fileInputStream = null;
+    BufferedInputStream bufferedInputStream = null;
+    StringBuilder container = new StringBuilder();
+    try {
+      fileInputStream = new FileInputStream(file);
+      bufferedInputStream = new BufferedInputStream(fileInputStream);
+      int unicode = -1;
+      while ((unicode = bufferedInputStream.read()) != -1) {
+        char symbol = (char) unicode;
+        container.append(symbol);
+      }
+      return container.toString();
+    } finally {
+      if (bufferedInputStream != null) {
+        try { bufferedInputStream.close();
+        } catch (IOException ignore) {}
+      }
+      if (fileInputStream != null) {
+        try { fileInputStream.close();
+        } catch (IOException ignore) {}
+      }
+    }
+  }
+
   private class SyncTimerListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
       if (currentFile != null && currentFile.exists()) {
         long ts = currentFile.lastModified();
         if (ts != lastModifiedTs) {
-          System.out.println("File was updated: " + currentFile.getName());
-          lastModifiedTs = ts;
+          try {
+            String content = readFile(currentFile);
+            viewer.update(content);
+            lastModifiedTs = ts;
+            System.out.println("File reloaded from disk: " + currentFile.getName());
+          } catch (IOException ex) {
+            System.out.println("Sync error: " + ex);
+          }
         }
       }
     }
