@@ -343,7 +343,7 @@ public class Viewer {
       JMenuItem fontJMenuItem = new JMenuItem("Font", new ImageIcon(""));
       fontJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
       fontJMenuItem.addActionListener(controller);
-      fontJMenuItem.setActionCommand("Font");
+      fontJMenuItem.setActionCommand("Show_Font_Dialog");
 
       formatMenu.setMnemonic('F');
       formatMenu.add(wrapJMenuItem);
@@ -601,7 +601,17 @@ public class Viewer {
       JOptionPane.INFORMATION_MESSAGE,
       icon);
     }
-
+  public void showResultSaveDocumentIntoModel(boolean result) {
+    if(result) {
+      JOptionPane.showMessageDialog(null,
+              "The file was saved successfully.");
+    } else {
+      JOptionPane.showMessageDialog(null,
+              "The file was not saved.",
+              "Error saving",
+              JOptionPane.ERROR_MESSAGE);
+    }
+  }
     public JFrame getFrame() {
       return frame;
     }

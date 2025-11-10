@@ -7,30 +7,35 @@ public class SaveHandler extends CommandHandler {
     private File currentFile;
     private Viewer viewer;
 
-    private boolean saveToFile(File file, String text) {
-        PrintWriter out = null;
-        try {
-            out = new PrintWriter(new FileWriter(file));
-            out.println(text);
-            out.flush();
+    public SaveHandler(Viewer viewer) {
+        this.viewer = viewer;
+    }
+
+    private boolean saveToFile(File file, String content) {
+        try (PrintWriter out = new PrintWriter(new FileWriter(file))) {
+            out.print(content);
             return true;
         } catch (IOException ioe) {
-            System.out.println(ioe);
+            System.out.println("Error saving file: " + ioe);
             return false;
-        } finally {
-            if (out != null) {
-                out.close();
-            }
         }
     }
-    void command() {
-        if (currentFile != null) {
-            String text = viewer.contentTextArea();
-            boolean saved = saveToFile(currentFile, text);
-            if (saved) {
-                System.out.println("Saved to file");
-            } else {
-                System.out.println("Failed to save to file");
+
+
+    public void command() {
+        if (currentFile == null) {
+            currentFile = viewer.showFileDialog("Save");
+            if (currentFile == null) {
+                System.out.println("Save canceled");
+                return;
             }
+        }
+
+        String text = viewer.contentTextArea();
+        if (text == null) text = "";
+
+        boolean result = saveToFile(currentFile, text);
+
+        viewer.showResultSaveDocumentIntoModel(result);
     }
-}}
+}

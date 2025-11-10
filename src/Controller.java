@@ -24,8 +24,10 @@ public class Controller implements ActionListener {
     syncTimer.start();
 
     map = new HashMap<>();
-    map.put("Save_Document", new SaveHandler());
+    map.put("Save_Document", new SaveHandler(viewer));
     map.put("Open_Document", new OpenHandler(viewer));
+    map.put("Show_Font_Dialog", new ShowFontHandler(viewer));
+    map.put("Print_Document", new PrintDocumentHandler(viewer));
   }
 
   public void actionPerformed(ActionEvent event) {
@@ -33,7 +35,6 @@ public class Controller implements ActionListener {
     CommandHandler object = map.get(command);
 
     if (object != null) {
-      // currentFile = viewer.showFileDialog("Save Document"); вынеси в свой класс SaveHandler;
       object.command();
     }
 
