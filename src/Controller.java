@@ -25,13 +25,15 @@ public class Controller implements ActionListener {
 
     map = new HashMap<>();
     map.put("Save_Document", new SaveHandler());
+    map.put("Open_Document", new OpenHandler(viewer));
   }
 
   public void actionPerformed(ActionEvent event) {
     String command = event.getActionCommand();
     CommandHandler object = map.get(command);
+
     if (object != null) {
-      currentFile = viewer.showFileDialog("Save Document");
+      // currentFile = viewer.showFileDialog("Save Document"); вынеси в свой класс SaveHandler;
       object.command();
     }
 

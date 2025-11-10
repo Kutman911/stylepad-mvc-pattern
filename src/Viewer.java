@@ -107,7 +107,7 @@ public class Viewer {
 
       updateCharCountLabel();
 
-    
+
 
       JScrollPane scrollPane = new JScrollPane(textArea);
       scrollPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2, new Color(255, 105, 180)));
@@ -602,4 +602,7 @@ public class Viewer {
       icon);
     }
 
+    public JFrame getFrame() {
+      return frame;
+    }
 }
