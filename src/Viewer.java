@@ -35,7 +35,8 @@ import javax.swing.JTextField;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.Image;
-
+import java.awt.BorderLayout;
+import javax.swing.SwingConstants;
 
 public class Viewer {
 
@@ -77,6 +78,16 @@ public class Viewer {
       UIManager.put("OptionPane.background", new Color(255, 228, 240));
       UIManager.put("Button.background", new Color(255, 204, 232));
       UIManager.put("Button.foreground", new Color(199, 21, 133));
+      UIManager.put("Panel.background", new Color(255, 228, 240));
+      UIManager.put("Label.foreground", new Color(199, 21, 133));
+      UIManager.put("List.background", new Color(255, 235, 245));
+      UIManager.put("List.foreground", new Color(199, 21, 133));
+      UIManager.put("List.selectionBackground", new Color(255, 170, 200));
+      UIManager.put("List.selectionForeground", Color.WHITE);
+      UIManager.put("TextField.background", Color.WHITE);
+      UIManager.put("TextField.foreground", new Color(199, 21, 133));
+      UIManager.put("Panel.border", BorderFactory.createLineBorder(new Color(220, 220, 220)));
+      UIManager.put("Panel.background", new Color(255, 228, 240));
 
       JMenuBar menuBar = createJMenuBar(controller);
 
@@ -364,7 +375,7 @@ public class Viewer {
       fontJMenuItem.addActionListener(controller);
       fontJMenuItem.setActionCommand("Font");
 
-      formatMenu.setMnemonic('T');
+      formatMenu.setMnemonic('F');
       formatMenu.add(wrapJMenuItem);
       formatMenu.add(fontJMenuItem);
 
@@ -438,6 +449,21 @@ public class Viewer {
 
         dialog = new JDialog(frame, "Font", true);
 
+        // Font Sample
+        JLabel sampleLable = new JLabel("Sample");
+        sampleLable.setBounds(260, 230, 90, 25);
+        dialog.add(sampleLable);
+
+        JPanel samplePanel = new JPanel();
+        samplePanel.setBounds(260, 255, 208, 100);
+        samplePanel.setLayout(new BorderLayout());
+
+        JLabel previewText = new JLabel("AaBbYyZz", SwingConstants.CENTER);
+        previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+        samplePanel.add(previewText, BorderLayout.CENTER);
+
+        dialog.add(samplePanel);
+
         // Font
         JLabel fontLabel = new JLabel("Font:");
         fontLabel.setDisplayedMnemonic('F');
@@ -460,26 +486,54 @@ public class Viewer {
         fontScroll.setBounds(20, 68, 220, 150);
         dialog.add(fontScroll);
 
+        // Listener font family
+        fontList.addListSelectionListener(e -> {
+          if(e.getValueIsAdjusting()) {
+            String selectedFontFamily = fontList.getSelectedValue();
+
+            if(selectedFontFamily != null) {
+              currentFontFamily = selectedFontFamily;
+              fontField.setText(currentFontFamily);
+              previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+            }
+            }
+          }
+        );
+
         // Font Style
         JLabel fontStyleLabel = new JLabel("Font Style:");
         fontStyleLabel.setDisplayedMnemonic('y');
         fontStyleLabel.setBounds(260, 20, 90, 25);
         dialog.add(fontStyleLabel);
 
-        JTextField fontStyleField = new JTextField(currentFontStyle);
+        JTextField fontStyleField = new JTextField("Regular");
         fontStyleField.setBounds(260, 45, 90, 25);
         fontStyleField.setHorizontalAlignment(JTextField.LEFT);
+        fontStyleField.setEditable(false);
         dialog.add(fontStyleField);
 
         String[] fontStyles = {"Regular", "Bold", "Italic", "Bold Italic"};
 
         JList<String> fontStyleList = new JList<>(fontStyles);
         fontStyleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        fontStyleList.setSelectedValue(currentFontStyle, true);
+        fontStyleList.setSelectedIndex(currentFontStyle);
 
         JScrollPane fontStyleScroll = new JScrollPane(fontStyleList);
         fontStyleScroll.setBounds(260, 68, 90, 150);
         dialog.add(fontStyleScroll);
+
+        // Listener font style
+        fontStyleList.addListSelectionListener(e -> {
+          if(e.getValueIsAdjusting()) {
+            int selectedIndex = fontStyleList.getSelectedIndex();
+            String selectedStyleName = fontStyleList.getSelectedValue();
+
+            currentFontStyle = selectedIndex;
+            fontStyleField.setText(selectedStyleName);
+
+            previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+          }
+        });
 
         // Font Size
         JLabel sizeLabel = new JLabel("Size:");
@@ -501,12 +555,26 @@ public class Viewer {
         sizeScroll.setBounds(380, 68, 90, 150);
         dialog.add(sizeScroll);
 
+        sizeList.addListSelectionListener(e -> {
+          if(e.getValueIsAdjusting()) {
+            Integer selectedFontSize = sizeList.getSelectedValue();
+
+            if(selectedFontSize != null) {
+              currentFontSize = selectedFontSize;
+              sizeField.setText(Integer.toString(currentFontSize));
+              previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+            }
+
+            }
+          }
+        );
+
         JButton buttonOk = new JButton("OK");
         buttonOk.setBounds(260, 390, 100, 50);
         buttonOk.setFocusPainted(false);
         buttonOk.addActionListener(
             (eventButton) -> {
-              Font fontTextArea = new Font("Arial", Font.PLAIN, 16);
+              Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
               textArea.setFont(fontTextArea);
               dialog.setVisible(false);
             });
