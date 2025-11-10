@@ -10,9 +10,9 @@ public class PrintDocument implements Printable {
   private String content;
   private Font font;
 
-  public PrintDocument(String content) {
-    this.content = content;
-    font = new Font("Arial", Font.BOLD | Font.ITALIC, 25);
+  public PrintDocument(String content, Font font) {
+        this.content = content;
+        this.font = font;
   }
   public int print(Graphics g, PageFormat pf, int page) throws PrinterException {
 

@@ -576,20 +576,22 @@ public class Viewer {
     }
 
     public void printDocument() {
+      Font userFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
       String content = textArea.getText();
-      PrintDocument printDocument = new PrintDocument(content);
       PrinterJob job = PrinterJob.getPrinterJob();
+      PrintDocument printDocument = new PrintDocument(content, userFont);
       job.setPrintable(printDocument);
       boolean ok = job.printDialog();
       if (ok) {
-        try {
-          job.print();
-          showResultPrintDocument();
-        } catch (PrinterException ex) {
-
-        }
+          try {
+              job.print();
+              showResultPrintDocument();
+          } catch (PrinterException ex) {
+              ex.printStackTrace();
+          }
       }
     }
+
 
     private void showResultPrintDocument() {
       if(icon == null) {
