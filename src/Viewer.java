@@ -37,6 +37,7 @@ import java.awt.Toolkit;
 import java.awt.Image;
 import java.awt.BorderLayout;
 import javax.swing.SwingConstants;
+import javax.swing.JCheckBoxMenuItem;
 
 public class Viewer {
 
@@ -45,14 +46,16 @@ public class Viewer {
     private JDialog dialog;
     private JFrame frame;
     private Icon icon;
-    private String currentFontFamily = "JetBrains Mono";
-    private int currentFontStyle = Font.PLAIN;
-    private int currentFontSize = 16;
+    private String currentFontFamily;
+    private int currentFontStyle;
+    private int currentFontSize;
     private JPanel statusBar;
     private JLabel charCountLabel;
     private JLabel encodingLabel;
     private JLabel zoomLabel;
-    private String currentEncoding = "UTF-8";
+    private String currentEncoding;
+    private String[] fontNames;
+    public JMenuItem wrapJMenuItem;
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -64,6 +67,10 @@ public class Viewer {
       currentFontFamily = "JetBrains Mono";
       currentFontStyle = Font.PLAIN;
       currentFontSize = 16;
+      currentEncoding = "UTF-8";
+
+      GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      fontNames = windowsFonts.getAvailableFontFamilyNames();
 
       UIManager.put("MenuBar.background", new Color(255, 204, 232));
       UIManager.put("MenuBar.foreground", Color.WHITE);
@@ -91,7 +98,7 @@ public class Viewer {
 
       JMenuBar menuBar = createJMenuBar(controller);
 
-      Font fontTextArea = new Font("JetBrains Mono", Font.PLAIN, 16);
+      Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
       Color colorTextArea = Color.BLACK;
 
       textArea = new JTextArea();
@@ -337,8 +344,10 @@ public class Viewer {
     private JMenu createFormatMenu(Controller controller) {
       JMenu formatMenu = new JMenu("Format");
 
-      JMenuItem wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));
+      wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));
       wrapJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+      wrapJMenuItem.addActionListener(controller);
+      wrapJMenuItem.setActionCommand("Wrap");
 
       JMenuItem fontJMenuItem = new JMenuItem("Font", new ImageIcon(""));
       fontJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
@@ -445,8 +454,8 @@ public class Viewer {
         fontField.setHorizontalAlignment(JTextField.LEFT);
         dialog.add(fontField);
 
-        GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        String[] fontNames = windowsFonts.getAvailableFontFamilyNames();
+        // GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        // String[] fontNames = windowsFonts.getAvailableFontFamilyNames();
 
         JList<String> fontList = new JList<>(fontNames);
         fontList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -573,6 +582,10 @@ public class Viewer {
 
     public String contentTextArea() {
         return textArea.getText();
+    }
+
+    public JTextArea getTextArea() {
+      return textArea;
     }
 
     public void printDocument() {

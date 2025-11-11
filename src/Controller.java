@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import javax.swing.Timer;
 import java.util.HashMap;
 import java.util.Map;
+
 public class Controller implements ActionListener {
 
   private Viewer viewer;
@@ -28,6 +29,7 @@ public class Controller implements ActionListener {
     map.put("Open_Document", new OpenHandler(viewer));
     map.put("Show_Font_Dialog", new ShowFontHandler(viewer));
     map.put("Print_Document", new PrintDocumentHandler(viewer));
+    map.put("Wrap", new WrapHandler(viewer));
   }
 
   public void actionPerformed(ActionEvent event) {
