@@ -112,6 +112,18 @@ public class Viewer {
       textArea.setLineWrap(true);
       textArea.setWrapStyleWord(true);
 
+      textArea.getDocument().addDocumentListener(new DocumentListener() {
+        public void changedUpdate(DocumentEvent e) {
+          updateCharCountLabel();
+        }
+        public void removeUpdate(DocumentEvent e) {
+          updateCharCountLabel();
+        }
+        public void insertUpdate(DocumentEvent e) {
+          updateCharCountLabel();
+        }
+      });
+
       updateCharCountLabel();
 
 
@@ -142,7 +154,7 @@ public class Viewer {
       statusBar.add(charCountLabel, gbc);
 
       gbc.gridx = 1;
-      gbc.weightx = 0.0; // Не расширять
+      gbc.weightx = 0.0;
       gbc.anchor = GridBagConstraints.CENTER;
       statusBar.add(new JSeparator(JSeparator.VERTICAL), gbc);
 
@@ -175,7 +187,7 @@ public class Viewer {
       GridBagConstraints mainGbc = new GridBagConstraints();
       mainGbc.fill = GridBagConstraints.BOTH;
       mainGbc.weightx = 1.0;
-      mainGbc.weighty = 1.0; // Занять все доступное пространство по вертикали
+      mainGbc.weighty = 1.0;
       mainGbc.gridx = 0;
       mainGbc.gridy = 0;
       frame.add(scrollPane, mainGbc);
@@ -183,7 +195,7 @@ public class Viewer {
       GridBagConstraints statusGbc = new GridBagConstraints();
       statusGbc.fill = GridBagConstraints.HORIZONTAL;
       statusGbc.weightx = 1.0;
-      statusGbc.weighty = 0.0; // Не расширять по вертикали
+      statusGbc.weighty = 0.0;
       statusGbc.gridx = 0;
       statusGbc.gridy = 1;
       statusGbc.anchor = GridBagConstraints.SOUTH;
@@ -195,19 +207,19 @@ public class Viewer {
     private void updateCharCountLabel() {
         if (textArea != null && charCountLabel != null) {
             int count = textArea.getText().length();
-            charCountLabel.setText("Символов: " + count);
+            charCountLabel.setText("Characters: " + count);
         }
     }
 
     public void updateEncodingLabel() {
         if (encodingLabel != null) {
-            encodingLabel.setText("Кодировка: " + currentEncoding);
+            encodingLabel.setText("Endcoding: " + currentEncoding);
         }
     }
 
     public void updateZoomLabel() {
         if (zoomLabel != null) {
-            zoomLabel.setText("Масштаб: " + currentFontSize + "pt");
+            zoomLabel.setText("Zoom: " + currentFontSize + "pt");
         }
     }
 
@@ -586,6 +598,22 @@ public class Viewer {
 
     public JTextArea getTextArea() {
       return textArea;
+    }
+
+    public void copyText() {
+      textArea.copy();
+    }
+
+    public void pasteText() {
+      textArea.paste();
+    }
+
+    public void cutText() {
+      getTextArea().cut();
+    }
+
+    public void deleteText() {
+      getTextArea().replaceSelection(null);
     }
 
     public void printDocument() {
