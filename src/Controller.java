@@ -23,7 +23,6 @@ public class Controller implements ActionListener {
     lastModifiedTs = -1;
     syncTimer = new Timer(2000, new SyncTimerListener());
     syncTimer.start();
-
     map = new HashMap<>();
     map.put("Save_Document", new SaveHandler(viewer));
     map.put("Open_Document", new OpenHandler(viewer));
@@ -34,6 +33,12 @@ public class Controller implements ActionListener {
     map.put("Paste_Text", new PasteHandler(viewer));
     map.put("Cut_Text", new CutHandler(viewer));
     map.put("Delete_Text", new DeleteHandler(viewer));
+    map.put("View_Toggle_StatusBar", new ToggleStatusBarHandler(viewer));
+    map.put("View_Toggle_CharCounter", new ToggleCharCounterHandler(viewer));
+    map.put("View_ZoomIn", new ZoomInHandler(viewer));
+    map.put("View_ZoomOut", new ZoomOutHandler(viewer));
+    map.put("View_ZoomReset", new ZoomResetHandler(viewer));
+
   }
 
   public void actionPerformed(ActionEvent event) {

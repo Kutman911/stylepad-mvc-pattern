@@ -56,6 +56,9 @@ public class Viewer {
     private String currentEncoding;
     private String[] fontNames;
     public JMenuItem wrapJMenuItem;
+    private boolean statusBarVisible;
+    private boolean charCounterVisible;
+
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -64,6 +67,8 @@ public class Viewer {
 
     private void createGUI(Controller controller) {
 
+      statusBarVisible = true;
+      charCounterVisible = true;
       currentFontFamily = "JetBrains Mono";
       currentFontStyle = Font.PLAIN;
       currentFontSize = 16;
@@ -229,10 +234,12 @@ public class Viewer {
       JMenu fileMenu = createFileMenu(controller);
       JMenu editMenu = createEditMenu(controller);
       JMenu formatMenu = createFormatMenu(controller);
+      JMenu viewMenu = createViewMenu(controller);
 
       menuBar.add(fileMenu);
       menuBar.add(editMenu);
       menuBar.add(formatMenu);
+      menuBar.add(viewMenu);
 
       return menuBar;
     }
@@ -372,6 +379,75 @@ public class Viewer {
 
       return formatMenu;
   }
+
+    private JMenu createViewMenu(Controller controller) {
+      JMenu viewMenu = new JMenu("View");
+
+      JMenuItem toggleStatus = new JMenuItem("Status Bar On/Off");
+      toggleStatus.addActionListener(controller);
+      toggleStatus.setActionCommand("View_Toggle_StatusBar");
+
+      JMenuItem toggleChars = new JMenuItem("Char Counter On/Off");
+      toggleChars.addActionListener(controller);
+      toggleChars.setActionCommand("View_Toggle_CharCounter");
+
+      JMenuItem zoomIn = new JMenuItem("Zoom In");
+      zoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
+      zoomIn.addActionListener(controller);
+      zoomIn.setActionCommand("View_ZoomIn");
+
+      JMenuItem zoomOut = new JMenuItem("Zoom Out");
+      zoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
+      zoomOut.addActionListener(controller);
+      zoomOut.setActionCommand("View_ZoomOut");
+
+      JMenuItem zoomReset = new JMenuItem("Reset Zoom");
+      zoomReset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
+      zoomReset.addActionListener(controller);
+      zoomReset.setActionCommand("View_ZoomReset");
+
+      viewMenu.add(toggleStatus);
+      viewMenu.add(toggleChars);
+      viewMenu.add(new JSeparator());
+      viewMenu.add(zoomIn);
+      viewMenu.add(zoomOut);
+      viewMenu.add(zoomReset);
+
+      return viewMenu;
+    }
+
+    public boolean isStatusBarVisible() {
+      return statusBar != null && statusBar.isVisible();
+    }
+    public void setStatusBarVisible(boolean visible) {
+      if (statusBar != null) {
+        statusBar.setVisible(visible);
+        statusBarVisible = visible;
+        if (frame != null) { frame.revalidate(); frame.repaint(); }
+      }
+    }
+
+    public boolean isCharCounterVisible() {
+      return charCountLabel != null && charCountLabel.isVisible();
+    }
+    public void setCharCounterVisible(boolean visible) {
+      if (charCountLabel != null) {
+          charCountLabel.setVisible(visible);
+          charCounterVisible = visible;
+          if (frame != null) { frame.revalidate(); frame.repaint(); }
+      }
+    }
+
+    public void zoomIn() {
+      setFontSettings(currentFontFamily, currentFontStyle, Math.min(currentFontSize + 2, 72));
+    }
+    public void zoomOut() {
+      setFontSettings(currentFontFamily, currentFontStyle, Math.max(currentFontSize - 2, 8));
+    }
+    public void resetZoom() {
+      setFontSettings(currentFontFamily, currentFontStyle, 16);
+    }
+
 
     public void update(String text) {
       textArea.setText(text);
