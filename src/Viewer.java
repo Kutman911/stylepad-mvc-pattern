@@ -390,25 +390,24 @@ public class Viewer {
 
         int returnValue;
         if (status.equals("Open")) {
-          returnValue = fileChooser.showOpenDialog(null);
+          returnValue = fileChooser.showOpenDialog(viewer);
         } else {
-          returnValue = fileChooser.showSaveDialog(null);
+          returnValue = fileChooser.showSaveDialog(viewer);
         }
-
+        File file = null;
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-          File file = fileChooser.getSelectedFile();
-
+          file = fileChooser.getSelectedFile();
+          if(file == null) {
+            return null;
+          }
           FileNameExtensionFilter filter = (FileNameExtensionFilter) fileChooser.getFileFilter();
           String ext = filter.getExtensions()[0];
 
           if (!file.getName().toLowerCase().endsWith("." + ext)) {
             file = new File(file.getAbsolutePath() + "." + ext);
           }
-
-          return file;
         }
-
-        return null;
+        return file;
       }
 
     public void showFontDialog() {
