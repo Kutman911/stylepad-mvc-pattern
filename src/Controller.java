@@ -38,6 +38,7 @@ public class Controller implements ActionListener {
     map.put("View_ZoomIn", new ZoomInHandler(viewer));
     map.put("View_ZoomOut", new ZoomOutHandler(viewer));
     map.put("View_ZoomReset", new ZoomResetHandler(viewer));
+    map.put("Exit", new ExitHandler(viewer));
 
   }
 
