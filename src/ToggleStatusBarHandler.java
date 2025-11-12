@@ -1,3 +1,4 @@
+
 public class ToggleStatusBarHandler extends CommandHandler {
 
     private Viewer viewer;

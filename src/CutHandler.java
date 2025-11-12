@@ -1,3 +1,4 @@
+
 public class CutHandler extends CommandHandler {
   private Viewer viewer;
 

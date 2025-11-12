@@ -1,3 +1,4 @@
+
 public class CopyHandler extends CommandHandler {
   private Viewer viewer;
 

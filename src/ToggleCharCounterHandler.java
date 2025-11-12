@@ -1,3 +1,4 @@
+
 public class ToggleCharCounterHandler extends CommandHandler {
 
     private Viewer viewer;

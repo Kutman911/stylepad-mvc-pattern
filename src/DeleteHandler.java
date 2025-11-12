@@ -1,3 +1,4 @@
+
 public class DeleteHandler extends CommandHandler {
   private Viewer viewer;
 

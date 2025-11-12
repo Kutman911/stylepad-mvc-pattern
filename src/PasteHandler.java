@@ -1,3 +1,4 @@
+
 public class PasteHandler extends CommandHandler {
   private Viewer viewer;
 

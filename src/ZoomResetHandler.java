@@ -1,3 +1,4 @@
+
 public class ZoomResetHandler extends CommandHandler {
 
     private Viewer viewer;

@@ -1,3 +1,4 @@
+
 public class ZoomOutHandler extends CommandHandler {
 
     private Viewer viewer;
