@@ -15,7 +15,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.JDialog;
 import javax.swing.JButton;
@@ -41,7 +41,7 @@ import javax.swing.JCheckBoxMenuItem;
 
 public class Viewer {
 
-    private JTextArea textArea;
+    private JTextPane textPane;
     private JFileChooser fileChooser;
     private JDialog dialog;
     private JFrame frame;
@@ -105,18 +105,18 @@ public class Viewer {
       Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
       Color colorTextArea = Color.BLACK;
 
-      textArea = new JTextArea();
-      textArea.setFont(fontTextArea);
-      textArea.setForeground(colorTextArea);
-      textArea.setBackground(Color.WHITE);
-      textArea.setCaretColor(new Color(199, 21, 133));
-      textArea.setSelectedTextColor(Color.WHITE);
-      textArea.setSelectionColor(new Color(255, 105, 180));
-      textArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(6, 6, 6, 6, new Color(255, 204, 232)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
-      textArea.setLineWrap(true);
-      textArea.setWrapStyleWord(true);
+      textPane = new JTextPane();
+      textPane.setFont(fontTextArea);
+      textPane.setForeground(colorTextArea);
+      textPane.setBackground(Color.WHITE);
+      textPane.setCaretColor(new Color(199, 21, 133));
+      textPane.setSelectedTextColor(Color.WHITE);
+      textPane.setSelectionColor(new Color(255, 105, 180));
+      textPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(6, 6, 6, 6, new Color(255, 204, 232)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+      //textPane.setLineWrap(true);
+      //textPane.setWrapStyleWord(true);
 
-      textArea.getDocument().addDocumentListener(new DocumentListener() {
+      textPane.getDocument().addDocumentListener(new DocumentListener() {
         public void changedUpdate(DocumentEvent e) {
           updateCharCountLabel();
         }
@@ -132,7 +132,7 @@ public class Viewer {
 
 
 
-      JScrollPane scrollPane = new JScrollPane(textArea);
+      JScrollPane scrollPane = new JScrollPane(textPane);
       scrollPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2, new Color(255, 105, 180)));
 
       statusBar = new JPanel(new GridBagLayout());
@@ -209,8 +209,8 @@ public class Viewer {
     }
 
     private void updateCharCountLabel() {
-        if (textArea != null && charCountLabel != null) {
-            int count = textArea.getText().length();
+        if (textPane != null && charCountLabel != null) {
+            int count = textPane.getText().length();
             charCountLabel.setText("Characters: " + count);
         }
     }
@@ -280,7 +280,6 @@ public class Viewer {
       closeProgram.addActionListener(controller);
       closeProgram.setActionCommand("Exit");
 
-
       JMenu fileMenu = new JMenu("File");
       fileMenu.setMnemonic('F');
       fileMenu.add(newDocument);
@@ -338,9 +337,6 @@ public class Viewer {
       timeAndDate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
       timeAndDate.addActionListener(controller);
       timeAndDate.setActionCommand("Time_And_Date");
-
-
-
 
       JMenu editMenu = new JMenu("Edit");
       editMenu.setMnemonic('E');
@@ -449,7 +445,7 @@ public class Viewer {
 
 
     public void update(String text) {
-      textArea.setText(text);
+      textPane.setText(text);
     }
 
     public void setFontSettings(String family, int style, int size) {
@@ -457,7 +453,7 @@ public class Viewer {
       currentFontStyle = style;
       currentFontSize = size;
       Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
-      textArea.setFont(newFont);
+      textPane.setFont(newFont);
       updateZoomLabel();
     }
 
@@ -632,7 +628,7 @@ public class Viewer {
         buttonOk.addActionListener(
             (eventButton) -> {
               Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
-              textArea.setFont(fontTextArea);
+              textPane.setFont(fontTextArea);
               dialog.setVisible(false);
             });
 
@@ -659,19 +655,19 @@ public class Viewer {
     }
 
     public String contentTextArea() {
-        return textArea.getText();
+        return textPane.getText();
     }
 
-    public JTextArea getTextArea() {
-      return textArea;
+    public JTextPane getTextArea() {
+      return textPane;
     }
 
     public void copyText() {
-      textArea.copy();
+      textPane.copy();
     }
 
     public void pasteText() {
-      textArea.paste();
+      textPane.paste();
     }
 
     public void cutText() {
@@ -684,7 +680,7 @@ public class Viewer {
 
     public void printDocument() {
       Font userFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
-      String content = textArea.getText();
+      String content = textPane.getText();
       PrinterJob job = PrinterJob.getPrinterJob();
       PrintDocument printDocument = new PrintDocument(content, userFont);
       job.setPrintable(printDocument);
