@@ -28,7 +28,7 @@ public class Controller implements ActionListener {
     map.put("Open_Document", new OpenHandler(viewer));
     map.put("Show_Font_Dialog", new ShowFontHandler(viewer));
     map.put("Print_Document", new PrintDocumentHandler(viewer));
-    //map.put("Wrap", new WrapHandler(viewer));
+    map.put("Wrap", new WrapHandler(viewer));
     map.put("Copy_Text", new CopyHandler(viewer));
     map.put("Paste_Text", new PasteHandler(viewer));
     map.put("Cut_Text", new CutHandler(viewer));

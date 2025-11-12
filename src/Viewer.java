@@ -37,7 +37,8 @@ import java.awt.Toolkit;
 import java.awt.Image;
 import java.awt.BorderLayout;
 import javax.swing.SwingConstants;
-import javax.swing.JCheckBoxMenuItem;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Viewer {
 
@@ -113,8 +114,6 @@ public class Viewer {
       textPane.setSelectedTextColor(Color.WHITE);
       textPane.setSelectionColor(new Color(255, 105, 180));
       textPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(6, 6, 6, 6, new Color(255, 204, 232)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
-      //textPane.setLineWrap(true);
-      //textPane.setWrapStyleWord(true);
 
       textPane.getDocument().addDocumentListener(new DocumentListener() {
         public void changedUpdate(DocumentEvent e) {
@@ -528,8 +527,6 @@ public class Viewer {
         fontField.setHorizontalAlignment(JTextField.LEFT);
         dialog.add(fontField);
 
-        // GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        // String[] fontNames = windowsFonts.getAvailableFontFamilyNames();
 
         JList<String> fontList = new JList<>(fontNames);
         fontList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -539,19 +536,7 @@ public class Viewer {
         fontScroll.setBounds(20, 68, 220, 150);
         dialog.add(fontScroll);
 
-        // Listener font family
-        fontList.addListSelectionListener(e -> {
-          if(e.getValueIsAdjusting()) {
-            String selectedFontFamily = fontList.getSelectedValue();
 
-            if(selectedFontFamily != null) {
-              currentFontFamily = selectedFontFamily;
-              fontField.setText(currentFontFamily);
-              previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
-            }
-            }
-          }
-        );
 
         // Font Style
         JLabel fontStyleLabel = new JLabel("Font Style:");
@@ -599,7 +584,8 @@ public class Viewer {
         sizeField.setHorizontalAlignment(JTextField.LEFT);
         dialog.add(sizeField);
 
-        Integer[] sizes = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 48, 60, 72};
+
+        Integer[] sizes = getSupportedFontSizes(currentFontFamily);
         JList<Integer> sizeList = new JList<>(sizes);
         sizeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sizeList.setSelectedValue(currentFontSize, true);
@@ -618,6 +604,23 @@ public class Viewer {
               previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
             }
 
+            }
+          }
+        );
+
+        // Listener font family
+        fontList.addListSelectionListener(e -> {
+          if(e.getValueIsAdjusting()) {
+            String selectedFontFamily = fontList.getSelectedValue();
+
+            if(selectedFontFamily != null) {
+              currentFontFamily = selectedFontFamily;
+              fontField.setText(currentFontFamily);
+              previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+
+              Integer[] supportedSizes = getSupportedFontSizes(currentFontFamily);
+              sizeList.setListData(supportedSizes);
+            }
             }
           }
         );
@@ -658,7 +661,7 @@ public class Viewer {
         return textPane.getText();
     }
 
-    public JTextPane getTextArea() {
+    public JTextPane getTextPane() {
       return textPane;
     }
 
@@ -671,11 +674,11 @@ public class Viewer {
     }
 
     public void cutText() {
-      getTextArea().cut();
+      getTextPane().cut();
     }
 
     public void deleteText() {
-      getTextArea().replaceSelection(null);
+      getTextPane().replaceSelection(null);
     }
 
     public void printDocument() {
@@ -717,7 +720,33 @@ public class Viewer {
               JOptionPane.ERROR_MESSAGE);
     }
   }
-    public JFrame getFrame() {
-      return frame;
-    }
+
+  public JFrame getFrame() {
+    return frame;
+  }
+
+  private Integer[] getSupportedFontSizes(String fontName) {
+      List<Integer> list = new ArrayList<>();
+
+      Font font = new Font(fontName, Font.PLAIN, 12);
+
+      if (font.canDisplayUpTo("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz") != -1) {
+          for (int size = 6; size <= 72; size++) {
+              Font f = new Font(fontName, Font.PLAIN, size);
+              if (f.canDisplay('A')) {
+                  list.add(size);
+              }
+          }
+      }
+
+      if (list.isEmpty() || list.size() > 60) {
+          int[] defaults = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 48, 60, 72};
+          for (int s : defaults) {
+              list.add(s);
+          }
+      }
+
+      return list.toArray(new Integer[0]);
+  }
+
 }
