@@ -371,44 +371,30 @@ public class Viewer {
     }
 
     public File showFileDialog(String status) {
-
-        if (fileChooser == null) {
-          fileChooser = new JFileChooser();
-
-          FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("Text Files (*.txt)", "txt");
-          FileNameExtensionFilter docxFilter = new FileNameExtensionFilter("Word Documents (*.docx)", "docx");
-          FileNameExtensionFilter jsonFilter = new FileNameExtensionFilter("JSON Files (*.json)", "json");
-          FileNameExtensionFilter allFilter = new FileNameExtensionFilter("All Files (*.*)", "*");
-
-          fileChooser.addChoosableFileFilter(txtFilter);
-          fileChooser.addChoosableFileFilter(docxFilter);
-          fileChooser.addChoosableFileFilter(jsonFilter);
-          fileChooser.addChoosableFileFilter(allFilter);
-
-          fileChooser.setFileFilter(txtFilter);
-        }
-
-        int returnValue;
-        if (status.equals("Open")) {
-          returnValue = fileChooser.showOpenDialog(viewer);
-        } else {
-          returnValue = fileChooser.showSaveDialog(viewer);
-        }
-        File file = null;
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-          file = fileChooser.getSelectedFile();
-          if(file == null) {
-            return null;
-          }
-          FileNameExtensionFilter filter = (FileNameExtensionFilter) fileChooser.getFileFilter();
-          String ext = filter.getExtensions()[0];
-
-          if (!file.getName().toLowerCase().endsWith("." + ext)) {
-            file = new File(file.getAbsolutePath() + "." + ext);
-          }
-        }
-        return file;
+      fileChooser = new JFileChooser();
+      File file = null;
+      int result = -1;
+      if (status.equals("Open")) {
+        result = fileChooser.showOpenDialog(this);
+        // fileChooser.setDialogTitile("Open");
+      } else {
+      result = fileChooser.showSaveDialog(this);
+        // fileChooser.setDialogTitile("Save");
       }
+
+      if(result == JFileChooser.APPROVE_OPTION) {
+        file = filechooser.getSelectedFile();
+        return file;
+      } else if (result == JFileChooser.ERROR_OPTION) {
+        JOptionPane.showMessageDialog(frame, "Не удалось найти указанный файл.",
+                                  JOptionPane.WARNING_MESSAGE);
+        return null;
+      } else {
+        JOptionPane.showMessageDialog(frame, "Выбор файла отменен нажатием Cancel.",
+                                  JOptionPane.WARNING_MESSAGE);
+      }
+      return null;
+    }
 
     public void showFontDialog() {
       int x = frame.getX();
