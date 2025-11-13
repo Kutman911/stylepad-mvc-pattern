@@ -112,6 +112,8 @@ public class Viewer {
       Color colorTextArea = Color.BLACK;
 
       textPane = new JTextPane();
+      textPane.setEditorKit(new WrapHandler.WrapEditorKit());
+
       textPane.setFont(fontTextArea);
       textPane.setForeground(colorTextArea);
       textPane.setBackground(Color.WHITE);
@@ -729,6 +731,7 @@ public class Viewer {
     public void copyText() {
       textPane.copy();
     }
+
 
     public void pasteText() {
       textPane.paste();
