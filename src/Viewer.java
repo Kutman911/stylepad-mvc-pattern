@@ -453,6 +453,12 @@ public class Viewer {
       currentFontSize = size;
       Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
       textPane.setFont(newFont);
+      int selectionStart = textPane.getSelectionStart();
+
+      textPane.setFont(newFont);
+      textPane.select(selectionStart, selectionEnd);
+      updateZoomLabel();
+      textPane.repaint();
       updateZoomLabel();
     }
 
