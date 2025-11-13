@@ -15,7 +15,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.JDialog;
 import javax.swing.JButton;
@@ -37,22 +37,33 @@ import java.awt.Toolkit;
 import java.awt.Image;
 import java.awt.BorderLayout;
 import javax.swing.SwingConstants;
+import java.util.List;
+import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+
 
 public class Viewer {
 
-    private JTextArea textArea;
+    private JTextPane textPane;
     private JFileChooser fileChooser;
     private JDialog dialog;
     private JFrame frame;
     private Icon icon;
-    private String currentFontFamily = "JetBrains Mono";
-    private int currentFontStyle = Font.PLAIN;
-    private int currentFontSize = 16;
+    private String currentFontFamily;
+    private int currentFontStyle;
+    private int currentFontSize;
     private JPanel statusBar;
     private JLabel charCountLabel;
     private JLabel encodingLabel;
     private JLabel zoomLabel;
-    private String currentEncoding = "UTF-8";
+    private String currentEncoding;
+    private String[] fontNames;
+    public JMenuItem wrapJMenuItem;
+    private boolean statusBarVisible;
+    private boolean charCounterVisible;
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -61,9 +72,15 @@ public class Viewer {
 
     private void createGUI(Controller controller) {
 
+      statusBarVisible = true;
+      charCounterVisible = true;
       currentFontFamily = "JetBrains Mono";
       currentFontStyle = Font.PLAIN;
       currentFontSize = 16;
+      currentEncoding = "UTF-8";
+
+      GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      fontNames = windowsFonts.getAvailableFontFamilyNames();
 
       UIManager.put("MenuBar.background", new Color(255, 204, 232));
       UIManager.put("MenuBar.foreground", Color.WHITE);
@@ -91,25 +108,35 @@ public class Viewer {
 
       JMenuBar menuBar = createJMenuBar(controller);
 
-      Font fontTextArea = new Font("JetBrains Mono", Font.PLAIN, 16);
+      Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
       Color colorTextArea = Color.BLACK;
 
-      textArea = new JTextArea();
-      textArea.setFont(fontTextArea);
-      textArea.setForeground(colorTextArea);
-      textArea.setBackground(Color.WHITE);
-      textArea.setCaretColor(new Color(199, 21, 133));
-      textArea.setSelectedTextColor(Color.WHITE);
-      textArea.setSelectionColor(new Color(255, 105, 180));
-      textArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(6, 6, 6, 6, new Color(255, 204, 232)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
-      textArea.setLineWrap(true);
-      textArea.setWrapStyleWord(true);
+      textPane = new JTextPane();
+      textPane.setFont(fontTextArea);
+      textPane.setForeground(colorTextArea);
+      textPane.setBackground(Color.WHITE);
+      textPane.setCaretColor(new Color(199, 21, 133));
+      textPane.setSelectedTextColor(Color.WHITE);
+      textPane.setSelectionColor(new Color(255, 105, 180));
+      textPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(6, 6, 6, 6, new Color(255, 204, 232)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+
+      textPane.getDocument().addDocumentListener(new DocumentListener() {
+        public void changedUpdate(DocumentEvent e) {
+          updateCharCountLabel();
+        }
+        public void removeUpdate(DocumentEvent e) {
+          updateCharCountLabel();
+        }
+        public void insertUpdate(DocumentEvent e) {
+          updateCharCountLabel();
+        }
+      });
 
       updateCharCountLabel();
 
 
 
-      JScrollPane scrollPane = new JScrollPane(textArea);
+      JScrollPane scrollPane = new JScrollPane(textPane);
       scrollPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2, new Color(255, 105, 180)));
 
       statusBar = new JPanel(new GridBagLayout());
@@ -135,7 +162,7 @@ public class Viewer {
       statusBar.add(charCountLabel, gbc);
 
       gbc.gridx = 1;
-      gbc.weightx = 0.0; // Не расширять
+      gbc.weightx = 0.0;
       gbc.anchor = GridBagConstraints.CENTER;
       statusBar.add(new JSeparator(JSeparator.VERTICAL), gbc);
 
@@ -168,7 +195,7 @@ public class Viewer {
       GridBagConstraints mainGbc = new GridBagConstraints();
       mainGbc.fill = GridBagConstraints.BOTH;
       mainGbc.weightx = 1.0;
-      mainGbc.weighty = 1.0; // Занять все доступное пространство по вертикали
+      mainGbc.weighty = 1.0;
       mainGbc.gridx = 0;
       mainGbc.gridy = 0;
       frame.add(scrollPane, mainGbc);
@@ -176,7 +203,7 @@ public class Viewer {
       GridBagConstraints statusGbc = new GridBagConstraints();
       statusGbc.fill = GridBagConstraints.HORIZONTAL;
       statusGbc.weightx = 1.0;
-      statusGbc.weighty = 0.0; // Не расширять по вертикали
+      statusGbc.weighty = 0.0;
       statusGbc.gridx = 0;
       statusGbc.gridy = 1;
       statusGbc.anchor = GridBagConstraints.SOUTH;
@@ -186,21 +213,21 @@ public class Viewer {
     }
 
     private void updateCharCountLabel() {
-        if (textArea != null && charCountLabel != null) {
-            int count = textArea.getText().length();
-            charCountLabel.setText("Символов: " + count);
+        if (textPane != null && charCountLabel != null) {
+            int count = textPane.getText().length();
+            charCountLabel.setText("Characters: " + count);
         }
     }
 
     public void updateEncodingLabel() {
         if (encodingLabel != null) {
-            encodingLabel.setText("Кодировка: " + currentEncoding);
+            encodingLabel.setText("Endcoding: " + currentEncoding);
         }
     }
 
     public void updateZoomLabel() {
         if (zoomLabel != null) {
-            zoomLabel.setText("Масштаб: " + currentFontSize + "pt");
+            zoomLabel.setText("Zoom: " + currentFontSize + "pt");
         }
     }
 
@@ -210,10 +237,12 @@ public class Viewer {
       JMenu fileMenu = createFileMenu(controller);
       JMenu editMenu = createEditMenu(controller);
       JMenu formatMenu = createFormatMenu(controller);
+      JMenu viewMenu = createViewMenu(controller);
 
       menuBar.add(fileMenu);
       menuBar.add(editMenu);
       menuBar.add(formatMenu);
+      menuBar.add(viewMenu);
 
       return menuBar;
     }
@@ -254,7 +283,6 @@ public class Viewer {
       imageDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
       closeProgram.addActionListener(controller);
       closeProgram.setActionCommand("Exit");
-
 
       JMenu fileMenu = new JMenu("File");
       fileMenu.setMnemonic('F');
@@ -314,9 +342,6 @@ public class Viewer {
       timeAndDate.addActionListener(controller);
       timeAndDate.setActionCommand("Time_And_Date");
 
-
-
-
       JMenu editMenu = new JMenu("Edit");
       editMenu.setMnemonic('E');
       editMenu.add(cutText);
@@ -333,17 +358,66 @@ public class Viewer {
       return editMenu;
     }
 
+    public void insertTimeAndDate() {
+      DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+      String stamp = LocalDateTime.now().format(fmt);
+
+      int start = textPane.getSelectionStart();
+      int end = textPane.getSelectionEnd();
+
+      if (start != end) {
+          // If there is selected text, replace it with a date/time string
+        textPane.replaceSelection(stamp);
+      } else {
+            // If there is no selection, insert it at the cursor position.
+        try {
+          textPane.getDocument().insertString(textPane.getCaretPosition(), stamp, null);
+          } catch (BadLocationException e) {
+            System.out.println("Insert time error: " + e.getMessage());
+          }
+      }
+
+      updateCharCountLabel();
+    }
+
+
+    public void insertImage(File imageFile) {
+    try {
+      if (imageFile != null && imageFile.exists()) {
+        // upload image
+        ImageIcon imageIcon = new ImageIcon(imageFile.getAbsolutePath());
+
+        textPane.insertIcon(imageIcon);
+      } else {
+        JOptionPane.showMessageDialog(frame,
+              "Invalid image file selected.",
+              "Image Error",
+              JOptionPane.ERROR_MESSAGE);
+      }
+  } catch (Exception ex) {
+      JOptionPane.showMessageDialog(frame,
+            "Error inserting image: " + ex.getMessage(),
+            "Insert Image Error",
+            JOptionPane.ERROR_MESSAGE);
+      ex.printStackTrace();
+    }
+}
+
+
+
 
     private JMenu createFormatMenu(Controller controller) {
       JMenu formatMenu = new JMenu("Format");
 
-      JMenuItem wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));
+      wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));
       wrapJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+      wrapJMenuItem.addActionListener(controller);
+      wrapJMenuItem.setActionCommand("Wrap");
 
       JMenuItem fontJMenuItem = new JMenuItem("Font", new ImageIcon(""));
       fontJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
       fontJMenuItem.addActionListener(controller);
-      fontJMenuItem.setActionCommand("Font");
+      fontJMenuItem.setActionCommand("Show_Font_Dialog");
 
       formatMenu.setMnemonic('F');
       formatMenu.add(wrapJMenuItem);
@@ -352,18 +426,96 @@ public class Viewer {
       return formatMenu;
   }
 
+    private JMenu createViewMenu(Controller controller) {
+      JMenu viewMenu = new JMenu("View");
+
+      JMenuItem toggleStatus = new JMenuItem("Status Bar On/Off");
+      toggleStatus.addActionListener(controller);
+      toggleStatus.setActionCommand("View_Toggle_StatusBar");
+
+      JMenuItem toggleChars = new JMenuItem("Char Counter On/Off");
+      toggleChars.addActionListener(controller);
+      toggleChars.setActionCommand("View_Toggle_CharCounter");
+
+      JMenuItem zoomIn = new JMenuItem("Zoom In");
+      zoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
+      zoomIn.addActionListener(controller);
+      zoomIn.setActionCommand("View_ZoomIn");
+
+      JMenuItem zoomOut = new JMenuItem("Zoom Out");
+      zoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
+      zoomOut.addActionListener(controller);
+      zoomOut.setActionCommand("View_ZoomOut");
+
+      JMenuItem zoomReset = new JMenuItem("Reset Zoom");
+      zoomReset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
+      zoomReset.addActionListener(controller);
+      zoomReset.setActionCommand("View_ZoomReset");
+
+      viewMenu.add(toggleStatus);
+      viewMenu.add(toggleChars);
+      viewMenu.add(new JSeparator());
+      viewMenu.add(zoomIn);
+      viewMenu.add(zoomOut);
+      viewMenu.add(zoomReset);
+
+      return viewMenu;
+    }
+
+    public boolean isStatusBarVisible() {
+      return statusBar != null && statusBar.isVisible();
+    }
+    public void setStatusBarVisible(boolean visible) {
+      if (statusBar != null) {
+        statusBar.setVisible(visible);
+        statusBarVisible = visible;
+        if (frame != null) { frame.revalidate(); frame.repaint(); }
+      }
+    }
+
+    public boolean isCharCounterVisible() {
+      return charCountLabel != null && charCountLabel.isVisible();
+    }
+    public void setCharCounterVisible(boolean visible) {
+      if (charCountLabel != null) {
+          charCountLabel.setVisible(visible);
+          charCounterVisible = visible;
+          if (frame != null) { frame.revalidate(); frame.repaint(); }
+      }
+    }
+
+    public void zoomIn() {
+      setFontSettings(currentFontFamily, currentFontStyle, Math.min(currentFontSize + 2, 72));
+    }
+    public void zoomOut() {
+      setFontSettings(currentFontFamily, currentFontStyle, Math.max(currentFontSize - 2, 8));
+    }
+    public void resetZoom() {
+      setFontSettings(currentFontFamily, currentFontStyle, 16);
+    }
+
+
     public void update(String text) {
-      textArea.setText(text);
+      textPane.setText(text);
     }
 
     public void setFontSettings(String family, int style, int size) {
-      currentFontFamily = family;
-      currentFontStyle = style;
-      currentFontSize = size;
-      Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
-      textArea.setFont(newFont);
-      updateZoomLabel();
+    currentFontFamily = family;
+    currentFontStyle = style;
+    currentFontSize = size;
+
+    Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
+
+    int selectionStart = textPane.getSelectionStart();
+    int selectionEnd = textPane.getSelectionEnd();
+
+    textPane.setFont(newFont);
+    textPane.select(selectionStart, selectionEnd);
+
+    updateZoomLabel();
+    textPane.repaint();
     }
+
 
     public void updateEncodingLabel(String encoding) {
          this.currentEncoding = encoding;
@@ -371,28 +523,34 @@ public class Viewer {
     }
 
     public File showFileDialog(String status) {
-      fileChooser = new JFileChooser();
       File file = null;
-      int result = -1;
-      if (status.equals("Open")) {
-        result = fileChooser.showOpenDialog(this);
-        // fileChooser.setDialogTitile("Open");
-      } else {
-      result = fileChooser.showSaveDialog(this);
-        // fileChooser.setDialogTitile("Save");
+      int returnValue;
+
+      if(fileChooser == null) {
+        fileChooser = new JFileChooser();
       }
 
-      if(result == JFileChooser.APPROVE_OPTION) {
-        file = filechooser.getSelectedFile();
+      if (status.equals("Open")) {
+        returnValue = fileChooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+          file = fileChooser.getSelectedFile();
+
+          if (file != null && !file.exists()) {
+            JOptionPane.showMessageDialog(frame,
+                      "File not found", "Open", JOptionPane.WARNING_MESSAGE);
+            return null;
+          }
+        }
         return file;
-      } else if (result == JFileChooser.ERROR_OPTION) {
-        JOptionPane.showMessageDialog(frame, "Не удалось найти указанный файл.",
-                                  JOptionPane.WARNING_MESSAGE);
-        return null;
-      } else {
-        JOptionPane.showMessageDialog(frame, "Выбор файла отменен нажатием Cancel.",
-                                  JOptionPane.WARNING_MESSAGE);
+
+      } else if (status.equals("Save")){
+        returnValue = fileChooser.showSaveDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+          file = fileChooser.getSelectedFile();
+        }
+        return file;
       }
+
       return null;
     }
 
@@ -430,8 +588,6 @@ public class Viewer {
         fontField.setHorizontalAlignment(JTextField.LEFT);
         dialog.add(fontField);
 
-        GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        String[] fontNames = windowsFonts.getAvailableFontFamilyNames();
 
         JList<String> fontList = new JList<>(fontNames);
         fontList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -441,19 +597,7 @@ public class Viewer {
         fontScroll.setBounds(20, 68, 220, 150);
         dialog.add(fontScroll);
 
-        // Listener font family
-        fontList.addListSelectionListener(e -> {
-          if(e.getValueIsAdjusting()) {
-            String selectedFontFamily = fontList.getSelectedValue();
 
-            if(selectedFontFamily != null) {
-              currentFontFamily = selectedFontFamily;
-              fontField.setText(currentFontFamily);
-              previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
-            }
-            }
-          }
-        );
 
         // Font Style
         JLabel fontStyleLabel = new JLabel("Font Style:");
@@ -501,7 +645,8 @@ public class Viewer {
         sizeField.setHorizontalAlignment(JTextField.LEFT);
         dialog.add(sizeField);
 
-        Integer[] sizes = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 48, 60, 72};
+
+        Integer[] sizes = getSupportedFontSizes(currentFontFamily);
         JList<Integer> sizeList = new JList<>(sizes);
         sizeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sizeList.setSelectedValue(currentFontSize, true);
@@ -524,13 +669,30 @@ public class Viewer {
           }
         );
 
+        // Listener font family
+        fontList.addListSelectionListener(e -> {
+          if(e.getValueIsAdjusting()) {
+            String selectedFontFamily = fontList.getSelectedValue();
+
+            if(selectedFontFamily != null) {
+              currentFontFamily = selectedFontFamily;
+              fontField.setText(currentFontFamily);
+              previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+
+              Integer[] supportedSizes = getSupportedFontSizes(currentFontFamily);
+              sizeList.setListData(supportedSizes);
+            }
+            }
+          }
+        );
+
         JButton buttonOk = new JButton("OK");
         buttonOk.setBounds(260, 390, 100, 50);
         buttonOk.setFocusPainted(false);
         buttonOk.addActionListener(
             (eventButton) -> {
               Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
-              textArea.setFont(fontTextArea);
+              textPane.setFont(fontTextArea);
               dialog.setVisible(false);
             });
 
@@ -556,29 +718,49 @@ public class Viewer {
       }
     }
 
-    public String contentTextArea() {
-        return textArea.getText();
+    public Document contentTextPane() {
+        return textPane.getDocument();
+    }
+
+    public JTextPane getTextPane() {
+      return textPane;
+    }
+
+    public void copyText() {
+      textPane.copy();
+    }
+
+    public void pasteText() {
+      textPane.paste();
+    }
+
+    public void cutText() {
+      getTextPane().cut();
+    }
+
+    public void deleteText() {
+      getTextPane().replaceSelection(null);
     }
 
     public void printDocument() {
-      String content = textArea.getText();
-      PrintDocument printDocument = new PrintDocument(content);
+      PrintDocument printDocument = new PrintDocument(textPane);
       PrinterJob job = PrinterJob.getPrinterJob();
       job.setPrintable(printDocument);
       boolean ok = job.printDialog();
       if (ok) {
-        try {
-          job.print();
-          showResultPrintDocument();
-        } catch (PrinterException ex) {
-
-        }
+          try {
+              job.print();
+              showResultPrintDocument();
+          } catch (PrinterException ex) {
+              System.out.println("PrinterException: " + ex);
+          }
       }
     }
 
+
     private void showResultPrintDocument() {
       if(icon == null) {
-        icon = new ImageIcon(getClass().getResource("/images/duke_printer.png"));
+        icon = new ImageIcon(getClass().getResource("/images/catPhoto.png"));
       }
       JOptionPane.showMessageDialog(null,
       "The document has been successfully printed",
@@ -586,8 +768,44 @@ public class Viewer {
       JOptionPane.INFORMATION_MESSAGE,
       icon);
     }
-
-    public JFrame getFrame() {
-      return frame;
+  public void showResultSaveDocumentIntoModel(boolean result) {
+    if(result) {
+      JOptionPane.showMessageDialog(null,
+              "The file was saved successfully.");
+    } else {
+      JOptionPane.showMessageDialog(null,
+              "The file was not saved.",
+              "Error saving",
+              JOptionPane.ERROR_MESSAGE);
     }
+  }
+
+  public JFrame getFrame() {
+    return frame;
+  }
+
+  private Integer[] getSupportedFontSizes(String fontName) {
+      List<Integer> list = new ArrayList<>();
+
+      Font font = new Font(fontName, Font.PLAIN, 12);
+
+      if (font.canDisplayUpTo("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz") != -1) {
+          for (int size = 6; size <= 72; size++) {
+              Font f = new Font(fontName, Font.PLAIN, size);
+              if (f.canDisplay('A')) {
+                  list.add(size);
+              }
+          }
+      }
+
+      if (list.isEmpty() || list.size() > 60) {
+          int[] defaults = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 48, 60, 72};
+          for (int s : defaults) {
+              list.add(s);
+          }
+      }
+
+      return list.toArray(new Integer[0]);
+  }
+
 }

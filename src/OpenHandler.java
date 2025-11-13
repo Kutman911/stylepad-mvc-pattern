@@ -33,20 +33,15 @@ public class OpenHandler extends CommandHandler {
         container.setLength(0);
 
       } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(viewer.getFrame(),
-                    "Unable to open file", "Open", JOptionPane.WARNING_MESSAGE);
+        System.out.println("Unable to open file: " + ioe.getMessage());
       } finally {
         try {
           fin.close();
           bin.close();
         } catch (IOException ioe) {
-          JOptionPane.showMessageDialog(viewer.getFrame(),
-                      "File closing error", "Open", JOptionPane.ERROR_MESSAGE);
+          System.out.println("File closing error: " + ioe.getMessage());
         }
+      }
     }
-  } else {
-    JOptionPane.showMessageDialog(viewer.getFrame(),
-                "File not found", "Open", JOptionPane.WARNING_MESSAGE);
   }
-}
 }

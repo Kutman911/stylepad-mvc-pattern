@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import javax.swing.Timer;
 import java.util.HashMap;
 import java.util.Map;
+
 public class Controller implements ActionListener {
 
   private Viewer viewer;
@@ -22,10 +23,30 @@ public class Controller implements ActionListener {
     lastModifiedTs = -1;
     syncTimer = new Timer(2000, new SyncTimerListener());
     syncTimer.start();
-
     map = new HashMap<>();
-    map.put("Save_Document", new SaveHandler());
+    SaveHandler saveHandler = new SaveHandler(viewer);
+    map.put("Save_Document", saveHandler);
+    map.put("New_Document", new NewHandler(viewer, saveHandler));
+    map.put("SaveAs_Document", new SaveAsHandler(viewer, saveHandler));
     map.put("Open_Document", new OpenHandler(viewer));
+    map.put("Show_Font_Dialog", new ShowFontHandler(viewer));
+    map.put("Print_Document", new PrintDocumentHandler(viewer));
+    map.put("Wrap", new WrapHandler(viewer));
+    map.put("Copy_Text", new CopyHandler(viewer));
+    map.put("Paste_Text", new PasteHandler(viewer));
+    map.put("Cut_Text", new CutHandler(viewer));
+    map.put("Delete_Text", new DeleteHandler(viewer));
+    map.put("View_Toggle_StatusBar", new ToggleStatusBarHandler(viewer));
+    map.put("View_Toggle_CharCounter", new ToggleCharCounterHandler(viewer));
+    map.put("View_ZoomIn", new ZoomInHandler(viewer));
+    map.put("View_ZoomOut", new ZoomOutHandler(viewer));
+    map.put("View_ZoomReset", new ZoomResetHandler(viewer));
+    map.put("Exit", new ExitHandler(viewer));
+    map.put("Time_And_Date", new TimeAndDateHandler(viewer));
+    map.put("Open_Image", new OpenImageHandler(viewer));
+
+
+
   }
 
   public void actionPerformed(ActionEvent event) {
@@ -33,7 +54,6 @@ public class Controller implements ActionListener {
     CommandHandler object = map.get(command);
 
     if (object != null) {
-      // currentFile = viewer.showFileDialog("Save Document"); вынеси в свой класс SaveHandler;
       object.command();
     }
 
