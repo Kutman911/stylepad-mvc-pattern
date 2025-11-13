@@ -380,6 +380,30 @@ public class Viewer {
     }
 
 
+    public void insertImage(File imageFile) {
+    try {
+      if (imageFile != null && imageFile.exists()) {
+        // upload image
+        ImageIcon imageIcon = new ImageIcon(imageFile.getAbsolutePath());
+
+        textPane.insertIcon(imageIcon);
+      } else {
+        JOptionPane.showMessageDialog(frame,
+              "Invalid image file selected.",
+              "Image Error",
+              JOptionPane.ERROR_MESSAGE);
+      }
+  } catch (Exception ex) {
+      JOptionPane.showMessageDialog(frame,
+            "Error inserting image: " + ex.getMessage(),
+            "Insert Image Error",
+            JOptionPane.ERROR_MESSAGE);
+      ex.printStackTrace();
+    }
+}
+
+
+
 
     private JMenu createFormatMenu(Controller controller) {
       JMenu formatMenu = new JMenu("Format");

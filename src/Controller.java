@@ -40,6 +40,8 @@ public class Controller implements ActionListener {
     map.put("View_ZoomReset", new ZoomResetHandler(viewer));
     map.put("Exit", new ExitHandler(viewer));
     map.put("Time_And_Date", new TimeAndDateHandler(viewer));
+    map.put("Open_Image", new OpenImageHandler(viewer));
+
 
 
   }
