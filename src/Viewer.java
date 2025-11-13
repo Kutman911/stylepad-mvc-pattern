@@ -39,6 +39,10 @@ import java.awt.BorderLayout;
 import javax.swing.SwingConstants;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javax.swing.text.BadLocationException;
+
 
 public class Viewer {
 
@@ -353,6 +357,29 @@ public class Viewer {
       return editMenu;
     }
 
+    public void insertTimeAndDate() {
+      DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+      String stamp = LocalDateTime.now().format(fmt);
+
+      int start = textPane.getSelectionStart();
+      int end = textPane.getSelectionEnd();
+
+      if (start != end) {
+          // Если есть выделенный текст — заменяем его строкой даты/времени
+        textPane.replaceSelection(stamp);
+      } else {
+            // Если выделения нет — вставляем в позицию курсора
+        try {
+          textPane.getDocument().insertString(textPane.getCaretPosition(), stamp, null);
+          } catch (BadLocationException e) {
+            System.out.println("Insert time error: " + e.getMessage());
+          }
+      }
+
+      updateCharCountLabel();
+    }
+
+
 
     private JMenu createFormatMenu(Controller controller) {
       JMenu formatMenu = new JMenu("Format");
@@ -448,19 +475,22 @@ public class Viewer {
     }
 
     public void setFontSettings(String family, int style, int size) {
-      currentFontFamily = family;
-      currentFontStyle = style;
-      currentFontSize = size;
-      Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
-      textPane.setFont(newFont);
-      int selectionStart = textPane.getSelectionStart();
+    currentFontFamily = family;
+    currentFontStyle = style;
+    currentFontSize = size;
 
-      textPane.setFont(newFont);
-      textPane.select(selectionStart, selectionEnd);
-      updateZoomLabel();
-      textPane.repaint();
-      updateZoomLabel();
+    Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
+
+    int selectionStart = textPane.getSelectionStart();
+    int selectionEnd = textPane.getSelectionEnd();
+
+    textPane.setFont(newFont);
+    textPane.select(selectionStart, selectionEnd);
+
+    updateZoomLabel();
+    textPane.repaint();
     }
+
 
     public void updateEncodingLabel(String encoding) {
          this.currentEncoding = encoding;
