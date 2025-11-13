@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 
 public class Viewer {
@@ -717,8 +718,8 @@ public class Viewer {
       }
     }
 
-    public String contentTextArea() {
-        return textPane.getText();
+    public Document contentTextPane() {
+        return textPane.getDocument();
     }
 
     public JTextPane getTextPane() {

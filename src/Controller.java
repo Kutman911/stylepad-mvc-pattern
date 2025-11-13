@@ -24,7 +24,10 @@ public class Controller implements ActionListener {
     syncTimer = new Timer(2000, new SyncTimerListener());
     syncTimer.start();
     map = new HashMap<>();
-    map.put("Save_Document", new SaveHandler(viewer));
+    SaveHandler saveHandler = new SaveHandler(viewer);
+    map.put("Save_Document", saveHandler);
+    map.put("New_Document", new NewHandler(viewer, saveHandler));
+    map.put("SaveAs_Document", new SaveAsHandler(viewer, saveHandler));
     map.put("Open_Document", new OpenHandler(viewer));
     map.put("Show_Font_Dialog", new ShowFontHandler(viewer));
     map.put("Print_Document", new PrintDocumentHandler(viewer));
