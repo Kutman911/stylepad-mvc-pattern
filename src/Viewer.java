@@ -365,10 +365,10 @@ public class Viewer {
       int end = textPane.getSelectionEnd();
 
       if (start != end) {
-          // Если есть выделенный текст — заменяем его строкой даты/времени
+          // If there is selected text, replace it with a date/time string
         textPane.replaceSelection(stamp);
       } else {
-            // Если выделения нет — вставляем в позицию курсора
+            // If there is no selection, insert it at the cursor position.
         try {
           textPane.getDocument().insertString(textPane.getCaretPosition(), stamp, null);
           } catch (BadLocationException e) {
@@ -742,10 +742,8 @@ public class Viewer {
     }
 
     public void printDocument() {
-      Font userFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
-      String content = textPane.getText();
+      PrintDocument printDocument = new PrintDocument(textPane);
       PrinterJob job = PrinterJob.getPrinterJob();
-      PrintDocument printDocument = new PrintDocument(content, userFont);
       job.setPrintable(printDocument);
       boolean ok = job.printDialog();
       if (ok) {
@@ -753,7 +751,7 @@ public class Viewer {
               job.print();
               showResultPrintDocument();
           } catch (PrinterException ex) {
-              ex.printStackTrace();
+              System.out.println("PrinterException: " + ex);
           }
       }
     }
@@ -761,7 +759,7 @@ public class Viewer {
 
     private void showResultPrintDocument() {
       if(icon == null) {
-        icon = new ImageIcon(getClass().getResource("/images/duke_printer.png"));
+        icon = new ImageIcon(getClass().getResource("/images/catPhoto.png"));
       }
       JOptionPane.showMessageDialog(null,
       "The document has been successfully printed",

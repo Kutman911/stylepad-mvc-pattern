@@ -1,6 +1,6 @@
 import java.io.File;
 
-public class OpenImageHandler implements CommandHandler {
+public class OpenImageHandler extends CommandHandler {
 
   private Viewer viewer;
 
@@ -8,7 +8,6 @@ public class OpenImageHandler implements CommandHandler {
     this.viewer = viewer;
   }
 
-  @Override
   public void command() {
     File imgFile = viewer.showFileDialog("Open");
     if (imgFile != null) {
