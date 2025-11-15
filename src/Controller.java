@@ -44,8 +44,7 @@ public class Controller implements ActionListener {
     map.put("Exit", new ExitHandler(viewer));
     map.put("Time_And_Date", new TimeAndDateHandler(viewer));
     map.put("Open_Image", new OpenImageHandler(viewer));
-
-
+    map.put("Find_Text", new FindTextHandler(viewer));
 
   }
 

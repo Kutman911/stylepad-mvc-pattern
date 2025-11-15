@@ -64,6 +64,7 @@ public class Viewer {
     public JMenuItem wrapJMenuItem;
     private boolean statusBarVisible;
     private boolean charCounterVisible;
+    private FindDialog findDialog;
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -760,6 +761,12 @@ public class Viewer {
       }
     }
 
+    public void showFindDialog() {
+      if (findDialog == null) {
+        findDialog = new FindDialog(this);
+      }
+      findDialog.setVisible(true);
+    }
 
     private void showResultPrintDocument() {
       if(icon == null) {
