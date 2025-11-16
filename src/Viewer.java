@@ -65,6 +65,7 @@ public class Viewer {
     private boolean charCounterVisible;
     private FindDialog findDialog;
     private FontChooserDialog fontDialog;
+    private GoToLineDialog goToLineDialog;
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -192,7 +193,7 @@ public class Viewer {
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.setLayout(new GridBagLayout());
 
-      Image icon = Toolkit.getDefaultToolkit().getImage("images/duke_printer.png");
+      Image icon = Toolkit.getDefaultToolkit().getImage("images/notepad_icon.png");
       frame.setIconImage(icon);
 
       GridBagConstraints mainGbc = new GridBagConstraints();
@@ -628,6 +629,13 @@ public class Viewer {
         findDialog = new FindDialog(this);
       }
       findDialog.setVisible(true);
+    }
+
+    public void showGoToLineDialog() {
+      if (goToLineDialog == null) {
+        goToLineDialog = new GoToLineDialog(this);
+      }
+      goToLineDialog.setVisible(true);
     }
 
     private void showResultPrintDocument() {
