@@ -452,6 +452,8 @@ public class Viewer {
       zoomReset.addActionListener(controller);
       zoomReset.setActionCommand("View_ZoomReset");
 
+      viewMenu.setMnemonic('V');
+
       viewMenu.add(toggleStatus);
       viewMenu.add(toggleChars);
       viewMenu.add(new JSeparator());
@@ -556,32 +558,23 @@ public class Viewer {
 
 
     public void showFontDialog() {
-      if (fontDialog == null) {
-        fontDialog = new FontChooserDialog(
+        FontChooserDialog dialog = new FontChooserDialog(
             frame,
             currentFontFamily,
             currentFontStyle,
             currentFontSize
         );
-      } else {
-          fontDialog.updateSettings(
-            currentFontFamily,
-            currentFontStyle,
-            currentFontSize
-          );
-      }
 
-      fontDialog.setVisible(true);
-      Font selectedFont = fontDialog.getSelectedFont();
+        Font selectedFont = dialog.showDialog();
 
-      if (selectedFont != null) {
-        setFontSettings(
-            selectedFont.getFamily(),
-            selectedFont.getStyle(),
-            selectedFont.getSize()
-        );
-      }
-     }
+        if (selectedFont != null) {
+            setFontSettings(
+                selectedFont.getFamily(),
+                selectedFont.getStyle(),
+                selectedFont.getSize()
+            );
+        }
+    }
 
     public Document contentTextPane() {
         return textPane.getDocument();

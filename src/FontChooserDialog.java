@@ -1,207 +1,171 @@
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 
 public class FontChooserDialog extends JDialog {
 
-  private String selectedFontFamily;
-  private int selectedFontStyle;
-  private int selectedFontSize;
-  private boolean dialogResult;
+  private String currentFontFamily;
+  private int currentFontStyle;
+  private int currentFontSize;
+  private GraphicsEnvironment windowsFonts;
+  private String[] fontNames;
 
-  private final JLabel previewText;
-  private final JList<String> fontList;
-  private final JList<String> fontStyleList;
-  private final JList<Integer> sizeList;
-  private final JTextField fontField;
-  private final JTextField fontStyleField;
-  private final JTextField sizeField;
+  private boolean approved = false;
 
-  private static final String[] FONT_STYLES = {"Regular", "Bold", "Italic", "Bold Italic"};
-  private static final int[] DEFAULT_SIZES = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 48, 60, 72};
+  public FontChooserDialog(JFrame frame, String fontFamily, int fontStyle, int fontSize) {
+    super(frame, "Font", true);
 
+    this.currentFontFamily = fontFamily;
+    this.currentFontStyle = fontStyle;
+    this.currentFontSize = fontSize;
 
-  public FontChooserDialog(JFrame owner, String currentFamily, int currentStyle, int currentSize) {
-    super(owner, "Font", true);
+    int x = frame.getX();
+    int y = frame.getY();
 
-    this.selectedFontFamily = currentFamily;
-    this.selectedFontStyle = currentStyle;
-    this.selectedFontSize = currentSize;
-
-    fontField = new JTextField(selectedFontFamily);
-    fontStyleField = new JTextField(FONT_STYLES[selectedFontStyle]);
-    sizeField = new JTextField(Integer.toString(selectedFontSize));
-
-    previewText = new JLabel("AaBbYyZz", SwingConstants.CENTER);
-
-    String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-    fontList = new JList<>(fontNames);
-    fontStyleList = new JList<>(FONT_STYLES);
-    sizeList = new JList<>(getSupportedFontSizes(selectedFontFamily));
-
-    setupUI();
-    setupListeners();
-
-    fontList.setSelectedValue(selectedFontFamily, true);
-    fontStyleList.setSelectedIndex(selectedFontStyle);
-    sizeList.setSelectedValue(selectedFontSize, true);
-  }
-
-  private void setupUI() {
-    setLayout(new BorderLayout(10, 10));
-
-    JPanel centerPanel = new JPanel(new GridBagLayout());
-    centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(5, 5, 5, 5);
-    gbc.fill = GridBagConstraints.BOTH;
-    gbc.weighty = 1.0;
-
-    addListComponent(centerPanel, gbc, 0, 0, "Font:", fontField, fontList);
-
-    fontStyleField.setEditable(false);
-    addListComponent(centerPanel, gbc, 1, 0, "Font Style:", fontStyleField, fontStyleList);
-
-    addListComponent(centerPanel, gbc, 2, 0, "Size:", sizeField, sizeList);
-
-    add(centerPanel, BorderLayout.CENTER);
-
-    JPanel previewPanel = new JPanel(new BorderLayout());
-    previewPanel.setBorder(BorderFactory.createTitledBorder("Sample"));
-    previewText.setFont(new Font(selectedFontFamily, selectedFontStyle, selectedFontSize));
-    previewPanel.add(previewText, BorderLayout.CENTER);
-
-    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-    JButton buttonOk = new JButton("OK");
-    JButton buttonCancel = new JButton("Cancel");
-
-    buttonOk.addActionListener(e -> handleOk());
-    buttonCancel.addActionListener(e -> handleCancel());
-
-    buttonPanel.add(buttonOk);
-    buttonPanel.add(buttonCancel);
-
-    JPanel southPanel = new JPanel(new BorderLayout());
-    southPanel.add(previewPanel, BorderLayout.CENTER);
-    southPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-    add(southPanel, BorderLayout.SOUTH);
-
-    pack();
-    setSize(500, 480);
+    setLayout(null);
+    setSize(500, 500);
+    setLocation(x + 100, y + 50);
     setResizable(false);
-    setLocationRelativeTo(getOwner());
+
+    windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    fontNames = windowsFonts.getAvailableFontFamilyNames();
+
+    // Sample
+    JLabel sampleLabel = new JLabel("Sample");
+    sampleLabel.setBounds(260, 230, 90, 25);
+    add(sampleLabel);
+
+    JPanel samplePanel = new JPanel(new BorderLayout());
+    samplePanel.setBounds(260, 255, 208, 100);
+    add(samplePanel);
+
+    JLabel previewText = new JLabel("AaBbYyZz", SwingConstants.CENTER);
+    previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+    samplePanel.add(previewText, BorderLayout.CENTER);
+
+    // Font
+    JLabel fontLabel = new JLabel("Font:");
+    fontLabel.setBounds(20, 20, 90, 25);
+    add(fontLabel);
+
+    JTextField fontField = new JTextField(currentFontFamily);
+    fontField.setBounds(20, 45, 220, 25);
+    add(fontField);
+
+    JList<String> fontList = new JList<>(fontNames);
+    fontList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    fontList.setSelectedValue(currentFontFamily, true);
+
+    JScrollPane fontScroll = new JScrollPane(fontList);
+    fontScroll.setBounds(20, 68, 220, 150);
+    add(fontScroll);
+
+    // Style
+    JLabel fontStyleLabel = new JLabel("Font Style:");
+    fontStyleLabel.setBounds(260, 20, 90, 25);
+    add(fontStyleLabel);
+
+    JTextField fontStyleField = new JTextField("Regular");
+    fontStyleField.setBounds(260, 45, 90, 25);
+    fontStyleField.setEditable(false);
+    add(fontStyleField);
+
+    String[] fontStyles = {"Regular", "Bold", "Italic", "Bold Italic"};
+    JList<String> fontStyleList = new JList<>(fontStyles);
+    fontStyleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    fontStyleList.setSelectedIndex(fontStyle);
+
+    JScrollPane styleScroll = new JScrollPane(fontStyleList);
+    styleScroll.setBounds(260, 68, 90, 150);
+    add(styleScroll);
+
+    // Size
+    JLabel sizeLabel = new JLabel("Size:");
+    sizeLabel.setBounds(380, 20, 90, 25);
+    add(sizeLabel);
+
+    JTextField sizeField = new JTextField(Integer.toString(fontSize));
+    sizeField.setBounds(380, 45, 90, 25);
+    add(sizeField);
+
+    Integer[] sizes = {8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72};
+    JList<Integer> sizeList = new JList<>(sizes);
+    sizeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    sizeList.setSelectedValue(fontSize, true);
+
+    JScrollPane sizeScroll = new JScrollPane(sizeList);
+    sizeScroll.setBounds(380, 68, 90, 150);
+    add(sizeScroll);
+
+    // Listeners
+    fontList.addListSelectionListener(
+        e -> {
+          if (e.getValueIsAdjusting()) {
+            currentFontFamily = fontList.getSelectedValue();
+            fontField.setText(currentFontFamily);
+            previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+          }
+        });
+
+    fontStyleList.addListSelectionListener(
+        e -> {
+          if (e.getValueIsAdjusting()) {
+            currentFontStyle = fontStyleList.getSelectedIndex();
+            fontStyleField.setText(fontStyleList.getSelectedValue());
+            previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+          }
+        });
+
+    sizeList.addListSelectionListener(
+        e -> {
+          if (e.getValueIsAdjusting()) {
+            Integer val = sizeList.getSelectedValue();
+            if (val != null) {
+              currentFontSize = val;
+              sizeField.setText(Integer.toString(val));
+              previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
+            }
+          }
+        });
+
+    // Buttons
+    JButton buttonOk = new JButton("OK");
+    buttonOk.setBounds(260, 390, 100, 50);
+    add(buttonOk);
+
+    JButton buttonCancel = new JButton("Cancel");
+    buttonCancel.setBounds(370, 390, 100, 50);
+    add(buttonCancel);
+
+    buttonOk.addActionListener(
+        e -> {
+          approved = true;
+          setVisible(false);
+        });
+
+    buttonCancel.addActionListener(
+        e -> {
+          approved = false;
+          setVisible(false);
+        });
   }
 
-  private void addListComponent(JPanel panel, GridBagConstraints gbc, int gridx, int gridy, String labelText, JTextField textField, JList<?> list) {
-    gbc.gridx = gridx;
+  public Font showDialog() {
+    setVisible(true);
 
-    JLabel label = new JLabel(labelText);
-    gbc.gridy = gridy;
-    gbc.weightx = (gridx == 0) ? 1.0 : 0.5;
-    gbc.anchor = GridBagConstraints.WEST;
-    panel.add(label, gbc);
-
-    gbc.gridy = gridy + 1;
-    gbc.weighty = 0.0;
-    panel.add(textField, gbc);
-
-    JScrollPane scrollPane = new JScrollPane(list);
-    scrollPane.setPreferredSize(new Dimension(textField.getPreferredSize().width, 150));
-    gbc.gridy = gridy + 2;
-    gbc.weighty = 1.0;
-    panel.add(scrollPane, gbc);
-
-    list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-  }
-
-  private void setupListeners() {
-
-    fontList.addListSelectionListener(e -> {
-      if (!e.getValueIsAdjusting()) {
-        String family = fontList.getSelectedValue();
-        if (family != null) {
-          selectedFontFamily = family;
-          fontField.setText(family);
-          updatePreview();
-
-          sizeList.setListData(getSupportedFontSizes(selectedFontFamily));
-          sizeList.setSelectedValue(selectedFontSize, true);
-        }
-      }
-    });
-
-    fontStyleList.addListSelectionListener(e -> {
-      if (!e.getValueIsAdjusting()) {
-        selectedFontStyle = fontStyleList.getSelectedIndex();
-        fontStyleField.setText(FONT_STYLES[selectedFontStyle]);
-        updatePreview();
-      }
-    });
-
-    sizeList.addListSelectionListener(e -> {
-      if (!e.getValueIsAdjusting()) {
-        Integer size = sizeList.getSelectedValue();
-        if (size != null) {
-          selectedFontSize = size;
-          sizeField.setText(Integer.toString(size));
-          updatePreview();
-        }
-      }
-    });
-  }
-
-  private void updatePreview() {
-    Font newFont = new Font(selectedFontFamily, selectedFontStyle, selectedFontSize);
-    previewText.setFont(newFont);
-  }
-
-  private void handleOk() {
-    dialogResult = true;
-    setVisible(false);
-  }
-
-  public void updateSettings(String family, int style, int size) {
-    this.selectedFontFamily = family;
-    this.selectedFontStyle = style;
-    this.selectedFontSize = size;
-
-    fontField.setText(family);
-    fontStyleField.setText(FONT_STYLES[style]);
-    sizeField.setText(Integer.toString(size));
-
-    fontList.setSelectedValue(family, true);
-    fontStyleList.setSelectedIndex(style);
-
-    sizeList.setListData(getSupportedFontSizes(family));
-    sizeList.setSelectedValue(size, true);
-
-    updatePreview();
-}
-
-  private void handleCancel() {
-    dialogResult = false;
-    setVisible(false);
-  }
-
-  public Font getSelectedFont() {
-    if (dialogResult) {
-      return new Font(selectedFontFamily, selectedFontStyle, selectedFontSize);
+    if (approved) {
+      return new Font(currentFontFamily, currentFontStyle, currentFontSize);
     }
     return null;
-  }
-
-
-  private Integer[] getSupportedFontSizes(String fontName) {
-    List<Integer> list = new ArrayList<>();
-    Font font = new Font(fontName, Font.PLAIN, 12);
-
-    for (int s : DEFAULT_SIZES) {
-      list.add(s);
-    }
-    return list.toArray(new Integer[0]);
   }
 }
