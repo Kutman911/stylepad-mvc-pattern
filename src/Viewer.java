@@ -22,7 +22,6 @@ import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.print.PrinterJob;
 import java.awt.print.PrinterException;
 import javax.swing.Icon;
@@ -624,6 +623,17 @@ public class Viewer {
       }
     }
 
+    private void showResultPrintDocument() {
+      if(icon == null) {
+        icon = new ImageIcon(getClass().getResource("/images/catPhoto.png"));
+      }
+      JOptionPane.showMessageDialog(null,
+      "The document has been successfully printed",
+      "Printer Document Dialog - StylePad MVC Pattern",
+      JOptionPane.INFORMATION_MESSAGE,
+      icon);
+    }
+
     public void showFindDialog() {
       if (findDialog == null) {
         findDialog = new FindDialog(this);
@@ -638,16 +648,7 @@ public class Viewer {
       goToLineDialog.setVisible(true);
     }
 
-    private void showResultPrintDocument() {
-      if(icon == null) {
-        icon = new ImageIcon(getClass().getResource("/images/catPhoto.png"));
-      }
-      JOptionPane.showMessageDialog(null,
-      "The document has been successfully printed",
-      "Printer Document Dialog - Stilepad MVC Pattern",
-      JOptionPane.INFORMATION_MESSAGE,
-      icon);
-    }
+
   public void showResultSaveDocumentIntoModel(boolean result) {
     if(result) {
       JOptionPane.showMessageDialog(null,
