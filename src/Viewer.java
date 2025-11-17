@@ -17,8 +17,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
-import javax.swing.JDialog;
-import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -28,16 +26,9 @@ import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import javax.swing.JList;
-import javax.swing.JTextField;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.Image;
-import java.awt.BorderLayout;
-import javax.swing.SwingConstants;
-import java.util.List;
-import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.text.BadLocationException;
@@ -61,7 +52,6 @@ public class Viewer {
     private boolean statusBarVisible;
     private boolean charCounterVisible;
     private FindDialog findDialog;
-    private FontChooserDialog fontDialog;
     private GoToLineDialog goToLineDialog;
 
     public Viewer() {
@@ -219,7 +209,7 @@ public class Viewer {
 
     public void updateEncodingLabel() {
         if (encodingLabel != null) {
-            encodingLabel.setText("Endcoding: " + currentEncoding);
+            encodingLabel.setText("Encoding: " + currentEncoding);
         }
     }
 
@@ -466,7 +456,10 @@ public class Viewer {
       if (statusBar != null) {
         statusBar.setVisible(visible);
         statusBarVisible = visible;
-        if (frame != null) { frame.revalidate(); frame.repaint(); }
+        if (frame != null) {
+           frame.revalidate();
+           frame.repaint();
+         }
       }
     }
 
@@ -477,7 +470,10 @@ public class Viewer {
       if (charCountLabel != null) {
           charCountLabel.setVisible(visible);
           charCounterVisible = visible;
-          if (frame != null) { frame.revalidate(); frame.repaint(); }
+          if (frame != null) {
+             frame.revalidate();
+             frame.repaint();
+           }
       }
     }
 
@@ -514,10 +510,6 @@ public class Viewer {
     }
 
 
-    public void updateEncodingLabel(String encoding) {
-         this.currentEncoding = encoding;
-         updateEncodingLabel();
-    }
 
     public File showFileDialog(String status) {
       File file = null;
