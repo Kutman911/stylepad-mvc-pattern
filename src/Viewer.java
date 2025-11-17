@@ -58,8 +58,6 @@ public class Viewer {
     private JLabel encodingLabel;
     private JLabel zoomLabel;
     private String currentEncoding;
-    private String[] fontNames;
-    public JMenuItem wrapJMenuItem;
     private boolean statusBarVisible;
     private boolean charCounterVisible;
     private FindDialog findDialog;
@@ -79,9 +77,6 @@ public class Viewer {
       currentFontStyle = Font.PLAIN;
       currentFontSize = 16;
       currentEncoding = "UTF-8";
-
-      GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
-      fontNames = windowsFonts.getAvailableFontFamilyNames();
 
       UIManager.put("MenuBar.background", new Color(255, 204, 232));
       UIManager.put("MenuBar.foreground", Color.WHITE);
@@ -409,7 +404,7 @@ public class Viewer {
     private JMenu createFormatMenu(Controller controller) {
       JMenu formatMenu = new JMenu("Format");
 
-      wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));
+      JMenuItem wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));
       wrapJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
       wrapJMenuItem.addActionListener(controller);
       wrapJMenuItem.setActionCommand("Wrap");

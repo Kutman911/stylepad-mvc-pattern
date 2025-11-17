@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -22,6 +24,20 @@ public class FontChooserDialog extends JDialog {
 
   private boolean approved = false;
 
+  private Integer[] generateSizes() {
+    List<Integer> sizes = new ArrayList<>();
+
+    for (int i = 8; i <= 24; i++) {
+      sizes.add(i);
+    }
+
+    for (int i = 26; i <= 72; i += 2) {
+      sizes.add(i);
+    }
+
+    return sizes.toArray(new Integer[0]);
+  }
+
   public FontChooserDialog(JFrame frame, String fontFamily, int fontStyle, int fontSize) {
     super(frame, "Font", true);
 
@@ -42,11 +58,11 @@ public class FontChooserDialog extends JDialog {
 
     // Sample
     JLabel sampleLabel = new JLabel("Sample");
-    sampleLabel.setBounds(260, 230, 90, 25);
+    sampleLabel.setBounds(179, 230, 100, 25);
     add(sampleLabel);
 
     JPanel samplePanel = new JPanel(new BorderLayout());
-    samplePanel.setBounds(260, 255, 208, 100);
+    samplePanel.setBounds(179, 255, 290, 100);
     add(samplePanel);
 
     JLabel previewText = new JLabel("AaBbYyZz", SwingConstants.CENTER);
@@ -98,7 +114,7 @@ public class FontChooserDialog extends JDialog {
     sizeField.setBounds(380, 45, 90, 25);
     add(sizeField);
 
-    Integer[] sizes = {8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72};
+    Integer[] sizes = generateSizes();
     JList<Integer> sizeList = new JList<>(sizes);
     sizeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     sizeList.setSelectedValue(fontSize, true);
