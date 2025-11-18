@@ -18,7 +18,7 @@ public class OpenHandler extends CommandHandler {
 
   public void command() {
     file = viewer.showFileDialog("Open");
-    if(file != null) {
+    if (file != null) {
       fin = null;
       bin = null;
       try {
@@ -36,8 +36,12 @@ public class OpenHandler extends CommandHandler {
         System.out.println("Unable to open file: " + ioe.getMessage());
       } finally {
         try {
-          fin.close();
-          bin.close();
+          if (fin != null) {
+            fin.close();
+          }
+          if (bin != null) {
+            bin.close();
+          }
         } catch (IOException ioe) {
           System.out.println("File closing error: " + ioe.getMessage());
         }
