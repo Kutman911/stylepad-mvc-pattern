@@ -41,7 +41,9 @@ import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
-
+import javax.swing.undo.UndoManager;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 
 public class Viewer {
 
@@ -61,6 +63,7 @@ public class Viewer {
     private boolean charCounterVisible;
     private FindDialog findDialog;
     private GoToLineDialog goToLineDialog;
+    private UndoManager undoManager;
 
     public Viewer() {
       Controller controller = new Controller(this);
@@ -131,6 +134,23 @@ public class Viewer {
       updateCharCountLabel();
       initZoomKeyBindings();
       initZoomMouseWheel();
+
+      undoManager = new UndoManager();
+
+      textPane.getDocument().addUndoableEditListener(undoManager);
+
+      textPane.getInputMap(JComponent.WHEN_FOCUSED).put(
+              KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK),
+              "Undo"
+      );
+      textPane.getActionMap().put("Undo", new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+              if (undoManager.canUndo()) {
+                  undoManager.undo();
+              }
+          }
+      });
 
       JScrollPane scrollPane = new JScrollPane(textPane);
       scrollPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2, new Color(255, 105, 180)));
