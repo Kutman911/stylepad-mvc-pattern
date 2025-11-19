@@ -386,10 +386,12 @@ public class Viewer {
         Image scaled = original.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaled);
 
-        // Insert the image at the caret position inside the text pane
+        // Insert the scaled image into the text pane
         textPane.insertIcon(scaledIcon);
 
       } else {
+
+        // Show an error message when the file is invalid
         JOptionPane.showMessageDialog(frame,
                 "Invalid image file selected.",
                 "Image Error",
