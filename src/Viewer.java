@@ -33,6 +33,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.InputMap;
+import javax.swing.ActionMap;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseWheelEvent;
 
 
 public class Viewer {
@@ -121,8 +129,8 @@ public class Viewer {
       });
 
       updateCharCountLabel();
-
-
+      initZoomKeyBindings();
+      initZoomMouseWheel();
 
       JScrollPane scrollPane = new JScrollPane(textPane);
       scrollPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2, new Color(255, 105, 180)));
@@ -493,6 +501,62 @@ public class Viewer {
       setFontSettings(currentFontFamily, currentFontStyle, 16);
     }
 
+    private void initZoomKeyBindings() {
+      InputMap im = textPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+      ActionMap am = textPane.getActionMap();
+
+      KeyStroke ctrlPlusMain   = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS,  InputEvent.CTRL_DOWN_MASK);
+      KeyStroke ctrlPlusNumpad = KeyStroke.getKeyStroke(KeyEvent.VK_ADD,     InputEvent.CTRL_DOWN_MASK);
+      KeyStroke ctrlMinusMain   = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,    InputEvent.CTRL_DOWN_MASK);
+      KeyStroke ctrlMinusNumpad = KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_DOWN_MASK);
+      KeyStroke ctrlZero = KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_DOWN_MASK);
+
+      im.put(ctrlPlusMain,   "zoomIn");
+      im.put(ctrlPlusNumpad, "zoomIn");
+      im.put(ctrlMinusMain,   "zoomOut");
+      im.put(ctrlMinusNumpad, "zoomOut");
+      im.put(ctrlZero, "zoomReset");
+
+      am.put("zoomIn",   new ZoomInAction());
+      am.put("zoomOut",  new ZoomOutAction());
+      am.put("zoomReset", new ZoomResetAction());
+    }
+
+    private class ZoomInAction extends AbstractAction {
+      public void actionPerformed(ActionEvent e) {
+        zoomIn();
+      }
+    }
+
+    private class ZoomOutAction extends AbstractAction {
+      public void actionPerformed(ActionEvent e) {
+        zoomOut();
+      }
+    }
+
+    private class ZoomResetAction extends AbstractAction {
+      public void actionPerformed(ActionEvent e) {
+        resetZoom();
+      }
+    }
+
+    private void initZoomMouseWheel() {
+      textPane.addMouseWheelListener(new ZoomMouseWheelListener());
+    }
+
+    private class ZoomMouseWheelListener implements MouseWheelListener {
+      public void mouseWheelMoved(MouseWheelEvent e) {
+        if (e.isControlDown()) {
+          int rotation = e.getWheelRotation();
+          if (rotation < 0) {
+            zoomIn();
+          } else if (rotation > 0) {
+            zoomOut();
+          }
+          e.consume();
+        }
+      }
+    }
 
     public void update(String text) {
       textPane.setText(text);
