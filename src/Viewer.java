@@ -369,26 +369,32 @@ public class Viewer {
     }
 
 
-    public void insertImage(File imageFile) {
+    public void insertImage(File imageFile, int width, int height) {
     try {
       if (imageFile != null && imageFile.exists()) {
-        ImageIcon imageIcon = new ImageIcon(imageFile.getAbsolutePath());
 
-        textPane.insertIcon(imageIcon);
+        ImageIcon original = new ImageIcon(imageFile.getAbsolutePath());
+
+        Image scaled = original.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaled);
+
+        textPane.insertIcon(scaledIcon);
+
       } else {
         JOptionPane.showMessageDialog(frame,
-              "Invalid image file selected.",
-              "Image Error",
-              JOptionPane.ERROR_MESSAGE);
+                "Invalid image file selected.",
+                "Image Error",
+                JOptionPane.ERROR_MESSAGE);
       }
-  } catch (Exception ex) {
+    } catch (Exception ex) {
       JOptionPane.showMessageDialog(frame,
-            "Error inserting image: " + ex.getMessage(),
-            "Insert Image Error",
-            JOptionPane.ERROR_MESSAGE);
+              "Error inserting image: " + ex.getMessage(),
+              "Insert Image Error",
+              JOptionPane.ERROR_MESSAGE);
       ex.printStackTrace();
     }
 }
+
 
 
     private JMenu createFormatMenu(Controller controller) {
