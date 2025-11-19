@@ -101,7 +101,7 @@ public class GoToLineDialog extends JDialog {
   private void goToLine() {
     String text = lineField.getText().trim();
     if (text.isEmpty()) {
-        return;
+      return;
     }
 
     try {
@@ -111,21 +111,29 @@ public class GoToLineDialog extends JDialog {
         return;
       }
 
-      int totalLines = textPane.getDocument().getDefaultRootElement().getElementCount();
+      Document document = textPane.getDocument();
+      int totalLines = document.getDefaultRootElement().getElementCount();
 
       if (lineNumber > totalLines) {
         JOptionPane.showMessageDialog(this,"Line doesn't exist", "Error", JOptionPane.ERROR_MESSAGE);
         return;
       }
 
-      int offset = textPane.getDocument().getDefaultRootElement().getElement(lineNumber - 1).getStartOffset();
+      javax.swing.text.Element lineElement = document.getDefaultRootElement().getElement(lineNumber - 1);
+      int startOffset = lineElement.getStartOffset();
+      int endOffset = lineElement.getEndOffset();
 
-      textPane.setCaretPosition(offset);
+      textPane.setCaretPosition(startOffset);
+      textPane.moveCaretPosition(endOffset - 1);
+
       textPane.requestFocus();
       dispose();
 
     } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, "Incorrect number", "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Incorrect number", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    catch (BadLocationException ex) {
+      JOptionPane.showMessageDialog(this, "Error: Invalid document location", "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
 }
