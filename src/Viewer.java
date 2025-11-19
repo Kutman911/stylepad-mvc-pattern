@@ -328,7 +328,7 @@ public class Viewer {
       goToLine.addActionListener(controller);
       goToLine.setActionCommand("Go_To_Line");
 
-      JMenuItem selectAllText = new JMenuItem("Open Image", new ImageIcon("images/select_all.png"));
+      JMenuItem selectAllText = new JMenuItem("Select All Text", new ImageIcon("images/select_all.png"));
       selectAllText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
       selectAllText.addActionListener(controller);
       selectAllText.setActionCommand("Select_All_Text");
@@ -386,6 +386,7 @@ public class Viewer {
         Image scaled = original.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaled);
 
+        // Insert the image at the caret position inside the text pane
         textPane.insertIcon(scaledIcon);
 
       } else {
@@ -395,6 +396,8 @@ public class Viewer {
                 JOptionPane.ERROR_MESSAGE);
       }
     } catch (Exception ex) {
+
+      // Display the exception if something goes wrong while inserting the image
       JOptionPane.showMessageDialog(frame,
               "Error inserting image: " + ex.getMessage(),
               "Insert Image Error",
