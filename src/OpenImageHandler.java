@@ -20,7 +20,9 @@ public class OpenImageHandler extends CommandHandler {
         "Width",
         JOptionPane.PLAIN_MESSAGE
       );
-      if (w == null) return;
+      if (w == null) {
+        return;
+      }
 
       String h = JOptionPane.showInputDialog(
         null,
@@ -28,7 +30,9 @@ public class OpenImageHandler extends CommandHandler {
         "Heght",
         JOptionPane.PLAIN_MESSAGE
       );
-      if (h == null) return;
+      if (h == null){
+        return;
+      }
 
       try {
         int width = Integer.parseInt(w);

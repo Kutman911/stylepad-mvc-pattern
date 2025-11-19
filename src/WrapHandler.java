@@ -77,8 +77,9 @@ public class WrapHandler extends CommandHandler {
         }
 
         public float getMinimumSpan(int axis) {
-            if (axis == View.X_AXIS)
+            if (axis == View.X_AXIS) {
                 return 0;
+            }
             return super.getMinimumSpan(axis);
         }
     }

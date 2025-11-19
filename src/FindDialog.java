@@ -21,7 +21,6 @@ public class FindDialog extends JDialog {
     private final JTextComponent textPane;
     private JTextField findField;
     private JCheckBox matchCaseCheckBox;
-    private JButton findNextButton;
     private int searchStartIndex;
 
     public FindDialog(Viewer viewer) {
@@ -61,7 +60,7 @@ public class FindDialog extends JDialog {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        findNextButton = new JButton("Find Next");
+        JButton findNextButton = new JButton("Find Next");
         findNextButton.addActionListener(e -> findNext());
 
         JButton cancelButton = new JButton("Cancel");

@@ -31,7 +31,7 @@ public class PrintDocument implements Printable {
         this.baseFont = textPane.getFont();
     }
 
-    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
         Graphics2D graphics2D = (Graphics2D) graphics;
         graphics2D.setColor(Color.BLACK);
         graphics2D.setFont(baseFont);
@@ -125,7 +125,7 @@ public class PrintDocument implements Printable {
 
         while (end != BreakIterator.DONE) {
             String word = text.substring(start, end);
-            String testLine = currentLineBuilder.toString() + word;
+            String testLine = currentLineBuilder + word;
 
             if (fontMetrics.stringWidth(testLine) > maxLineWidth) {
                 if (fontMetrics.stringWidth(word) > maxLineWidth) {
@@ -143,7 +143,7 @@ public class PrintDocument implements Printable {
             end = wordBoundary.next();
         }
 
-        if (currentLineBuilder.length() > 0) {
+        if (!currentLineBuilder.isEmpty()) {
             lines.add(PrintableElement.createTextElement(currentLineBuilder.toString().trim()));
         }
 

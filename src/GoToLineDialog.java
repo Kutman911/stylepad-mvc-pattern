@@ -132,8 +132,5 @@ public class GoToLineDialog extends JDialog {
     } catch (NumberFormatException ex) {
       JOptionPane.showMessageDialog(this, "Incorrect number", "Error", JOptionPane.ERROR_MESSAGE);
     }
-    catch (BadLocationException ex) {
-      JOptionPane.showMessageDialog(this, "Error: Invalid document location", "Error", JOptionPane.ERROR_MESSAGE);
-    }
   }
 }

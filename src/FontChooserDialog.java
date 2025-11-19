@@ -19,10 +19,8 @@ public class FontChooserDialog extends JDialog {
   private String currentFontFamily;
   private int currentFontStyle;
   private int currentFontSize;
-  private GraphicsEnvironment windowsFonts;
-  private String[] fontNames;
 
-  private boolean approved = false;
+    private boolean approved = false;
 
   private Integer[] generateSizes() {
     List<Integer> sizes = new ArrayList<>();
@@ -53,8 +51,8 @@ public class FontChooserDialog extends JDialog {
     setLocation(x + 100, y + 50);
     setResizable(false);
 
-    windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    fontNames = windowsFonts.getAvailableFontFamilyNames();
+    GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    String[] fontNames = windowsFonts.getAvailableFontFamilyNames();
 
     // Sample
     JLabel sampleLabel = new JLabel("Sample");
