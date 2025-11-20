@@ -110,7 +110,6 @@ public class Viewer {
 
       textPane = new JTextPane();
       textPane.setEditorKit(new WrapHandler.WrapEditorKit());
-
       textPane.setFont(fontTextArea);
       textPane.setForeground(colorTextArea);
       textPane.setBackground(Color.WHITE);
@@ -588,20 +587,20 @@ public class Viewer {
     }
 
     public void setFontSettings(String family, int style, int size) {
-    currentFontFamily = family;
-    currentFontStyle = style;
-    currentFontSize = size;
+      currentFontFamily = family;
+      currentFontStyle = style;
+      currentFontSize = size;
 
-    Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
+      Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
 
-    int selectionStart = textPane.getSelectionStart();
-    int selectionEnd = textPane.getSelectionEnd();
+      int selectionStart = textPane.getSelectionStart();
+      int selectionEnd = textPane.getSelectionEnd();
 
-    textPane.setFont(newFont);
-    textPane.select(selectionStart, selectionEnd);
+      textPane.setFont(newFont);
+      textPane.select(selectionStart, selectionEnd);
 
-    updateZoomLabel();
-    textPane.repaint();
+      updateZoomLabel();
+      textPane.repaint();
     }
 
 

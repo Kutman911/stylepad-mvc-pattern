@@ -13,14 +13,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class FontChooserDialog extends JDialog {
 
   private String currentFontFamily;
   private int currentFontStyle;
   private int currentFontSize;
-
-    private boolean approved = false;
+  private boolean approved = false;
+  private boolean ignoreSearch = false;
+  private GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
+  private String[] fontNames = windowsFonts.getAvailableFontFamilyNames();
 
   private Integer[] generateSizes() {
     List<Integer> sizes = new ArrayList<>();
@@ -34,6 +38,30 @@ public class FontChooserDialog extends JDialog {
     }
 
     return sizes.toArray(new Integer[0]);
+  }
+
+  private void filterFontList(JList<String> fontList, String filter, String[] allFonts) {
+    List<String> filtered = new ArrayList<>();
+
+    for (String f : allFonts) {
+      if (f.toLowerCase().contains(filter.toLowerCase())) {
+        filtered.add(f);
+      }
+    }
+
+    fontList.setListData(filtered.toArray(new String[0]));
+  }
+
+  private void filterSizeList(JList<Integer> sizeList, String filter, Integer[] allSizes) {
+    List<Integer> filtered = new ArrayList<>();
+
+    for (Integer s : allSizes) {
+      if (filter.isEmpty() || s.toString().startsWith(filter)) {
+        filtered.add(s);
+      }
+    }
+
+    sizeList.setListData(filtered.toArray(new Integer[0]));
   }
 
   public FontChooserDialog(JFrame frame, String fontFamily, int fontStyle, int fontSize) {
@@ -50,9 +78,6 @@ public class FontChooserDialog extends JDialog {
     setSize(500, 500);
     setLocation(x + 100, y + 50);
     setResizable(false);
-
-    GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    String[] fontNames = windowsFonts.getAvailableFontFamilyNames();
 
     // Sample
     JLabel sampleLabel = new JLabel("Sample");
@@ -121,12 +146,73 @@ public class FontChooserDialog extends JDialog {
     sizeScroll.setBounds(380, 68, 90, 150);
     add(sizeScroll);
 
+    fontField
+        .getDocument()
+        .addDocumentListener(
+            new DocumentListener() {
+
+              public void insertUpdate(DocumentEvent e) {
+                search();
+              }
+
+              public void removeUpdate(DocumentEvent e) {
+                search();
+              }
+
+              public void changedUpdate(DocumentEvent e) {
+                search();
+              }
+
+              private void search() {
+                if (ignoreSearch) {
+                  return;
+                }
+
+                filterFontList(fontList, fontField.getText(), fontNames);
+              }
+            });
+
+    sizeField
+        .getDocument()
+        .addDocumentListener(
+            new DocumentListener() {
+
+              public void insertUpdate(DocumentEvent e) {
+                search();
+              }
+
+              public void removeUpdate(DocumentEvent e) {
+                search();
+              }
+
+              public void changedUpdate(DocumentEvent e) {
+                search();
+              }
+
+              private void search() {
+                if (ignoreSearch) {
+                  return;
+                }
+
+                filterSizeList(sizeList, sizeField.getText(), sizes);
+              }
+            });
+
     // Listeners
     fontList.addListSelectionListener(
         e -> {
           if (e.getValueIsAdjusting()) {
-            currentFontFamily = fontList.getSelectedValue();
+            String selected = fontList.getSelectedValue();
+            if (selected == null) {
+              return;
+            }
+
+            currentFontFamily = selected;
+
+            ignoreSearch = true;
             fontField.setText(currentFontFamily);
+            ignoreSearch = false;
+
             previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
           }
         });
@@ -144,11 +230,15 @@ public class FontChooserDialog extends JDialog {
         e -> {
           if (e.getValueIsAdjusting()) {
             Integer val = sizeList.getSelectedValue();
-            if (val != null) {
-              currentFontSize = val;
-              sizeField.setText(Integer.toString(val));
-              previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
-            }
+            if (val == null) return;
+
+            currentFontSize = val;
+
+            ignoreSearch = true;
+            sizeField.setText(val.toString());
+            ignoreSearch = false;
+
+            previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
           }
         });
 
