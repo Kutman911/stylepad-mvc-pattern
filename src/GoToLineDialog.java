@@ -14,7 +14,6 @@ import javax.swing.JTextField;
 import javax.swing.JComponent;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
-import javax.swing.text.BadLocationException;
 import javax.swing.BorderFactory;
 
 public class GoToLineDialog extends JDialog {
@@ -54,11 +53,11 @@ public class GoToLineDialog extends JDialog {
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.LINE_START;
 
-    JLabel LineLabel = new JLabel("Line number:");
+    JLabel lineLabel = new JLabel("Line number:");
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.gridwidth = 1;
-    goPanel.add(LineLabel, gbc);
+    goPanel.add(lineLabel, gbc);
 
     clearButton.setBorder(null);
     clearButton.setFocusable(false);

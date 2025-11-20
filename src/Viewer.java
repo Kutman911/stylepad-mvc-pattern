@@ -44,6 +44,11 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.undo.UndoManager;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
+import javax.swing.JToolBar;
+import javax.swing.JButton;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 public class Viewer {
 
@@ -102,8 +107,11 @@ public class Viewer {
       UIManager.put("TextField.foreground", new Color(199, 21, 133));
       UIManager.put("Panel.border", BorderFactory.createLineBorder(new Color(220, 220, 220)));
       UIManager.put("Panel.background", new Color(255, 228, 240));
+      UIManager.put("MenuBar.background", new Color(255, 204, 232));
+
 
       JMenuBar menuBar = createJMenuBar(controller);
+      JToolBar toolBar = createToolBar(controller);
 
       Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
       Color colorTextArea = Color.BLACK;
@@ -200,19 +208,26 @@ public class Viewer {
       frame.setSize(700, 600);
       frame.setLocationRelativeTo(null);
       frame.setJMenuBar(menuBar);
-      frame.add("Center", scrollPane);
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.setLayout(new GridBagLayout());
 
       Image icon = Toolkit.getDefaultToolkit().getImage("images/notepad_icon.png");
       frame.setIconImage(icon);
 
+      GridBagConstraints toolbarGbc = new GridBagConstraints();
+      toolbarGbc.fill = GridBagConstraints.HORIZONTAL;
+      toolbarGbc.weightx = 1.0;
+      toolbarGbc.weighty = 0.0;
+      toolbarGbc.gridx = 0;
+      toolbarGbc.gridy = 0;
+      frame.add(toolBar, toolbarGbc);
+
       GridBagConstraints mainGbc = new GridBagConstraints();
       mainGbc.fill = GridBagConstraints.BOTH;
       mainGbc.weightx = 1.0;
       mainGbc.weighty = 1.0;
       mainGbc.gridx = 0;
-      mainGbc.gridy = 0;
+      mainGbc.gridy = 1;
       frame.add(scrollPane, mainGbc);
 
       GridBagConstraints statusGbc = new GridBagConstraints();
@@ -220,7 +235,7 @@ public class Viewer {
       statusGbc.weightx = 1.0;
       statusGbc.weighty = 0.0;
       statusGbc.gridx = 0;
-      statusGbc.gridy = 1;
+      statusGbc.gridy = 2;
       statusGbc.anchor = GridBagConstraints.SOUTH;
       frame.add(statusBar, statusGbc);
 
@@ -733,6 +748,103 @@ public class Viewer {
               "Error saving",
               JOptionPane.ERROR_MESSAGE);
     }
+  }
+
+  private JToolBar createToolBar(Controller controller) {
+    JToolBar toolBar = new JToolBar();
+    toolBar.setFloatable(false);
+    toolBar.setBackground(new Color(255, 245, 250));
+    toolBar.setBorder(BorderFactory.createMatteBorder(0, 2, 2, 2, new Color(255, 105, 180)));
+    toolBar.setMargin(new Insets(4, 4, 4, 4));
+
+    JButton newButton   = createToolbarButton("images/new.png",   "New",   "New_Document",  controller);
+    JButton openButton  = createToolbarButton("images/open.png",  "Open",  "Open_Document", controller);
+    JButton saveButton  = createToolbarButton("images/save.png",  "Save",  "Save_Document", controller);
+
+    JButton cutButton   = createToolbarButton("images/cut.png",   "Cut",   "Cut_Text",      controller);
+    JButton copyButton  = createToolbarButton("images/copy.png",  "Copy",  "Copy_Text",     controller);
+    JButton pasteButton = createToolbarButton("images/paste.png", "Paste", "Paste_Text",    controller);
+
+    JButton alignLeftButton   = createToolbarButton("images/align_left.png",   "Align left");
+    JButton alignCenterButton = createToolbarButton("images/align_center.png", "Align center");
+    JButton alignRightButton  = createToolbarButton("images/align_right.png",  "Align right");
+
+    alignLeftButton.addActionListener(e -> alignLeft());
+    alignCenterButton.addActionListener(e -> alignCenter());
+    alignRightButton.addActionListener(e -> alignRight());
+
+    toolBar.add(newButton);
+    toolBar.add(openButton);
+    toolBar.add(saveButton);
+    toolBar.add(cutButton);
+    toolBar.add(copyButton);
+    toolBar.add(pasteButton);
+    toolBar.add(alignLeftButton);
+    toolBar.add(alignCenterButton);
+    toolBar.add(alignRightButton);
+
+    return toolBar;
+  }
+
+  private JButton createBaseToolbarButton(String iconPath, String tooltip) {
+    JButton button = new JButton(new ImageIcon(iconPath));
+    button.setToolTipText(tooltip);
+    button.setFocusable(false);
+    button.setOpaque(true);
+
+    button.setBackground(new Color(255, 240, 245));
+    button.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
+    button.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseEntered(java.awt.event.MouseEvent evt) {
+        button.setBackground(new Color(255, 220, 235));
+      }
+      public void mouseExited(java.awt.event.MouseEvent evt) {
+        button.setBackground(new Color(255, 240, 245));
+      }
+    });
+
+    return button;
+  }
+
+  private JButton createToolbarButton(String iconPath, String tooltip, String actionCommand, Controller controller) {
+    JButton button = createBaseToolbarButton(iconPath, tooltip);
+    button.addActionListener(controller);
+    button.setActionCommand(actionCommand);
+    return button;
+  }
+
+  private JButton createToolbarButton(String iconPath, String tooltip) {
+    return createBaseToolbarButton(iconPath, tooltip);
+  }
+
+  public void alignLeft() {
+    applyAlignment(StyleConstants.ALIGN_LEFT);
+  }
+
+  public void alignCenter() {
+    applyAlignment(StyleConstants.ALIGN_CENTER);
+  }
+
+  public void alignRight() {
+    applyAlignment(StyleConstants.ALIGN_RIGHT);
+  }
+
+  private void applyAlignment(int alignment) {
+    StyledDocument doc = textPane.getStyledDocument();
+    SimpleAttributeSet attrs = new SimpleAttributeSet();
+    StyleConstants.setAlignment(attrs, alignment);
+
+    int start = textPane.getSelectionStart();
+    int end   = textPane.getSelectionEnd();
+
+    if (start == end) {
+      doc.setParagraphAttributes(start, 1, attrs, false);
+    } else {
+        doc.setParagraphAttributes(start, end - start, attrs, false);
+    }
+
+    textPane.repaint();
   }
 
   public JFrame getFrame() {
