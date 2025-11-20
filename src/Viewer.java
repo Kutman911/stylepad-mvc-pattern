@@ -107,7 +107,6 @@ public class Viewer {
       UIManager.put("TextField.foreground", new Color(199, 21, 133));
       UIManager.put("Panel.border", BorderFactory.createLineBorder(new Color(220, 220, 220)));
       UIManager.put("Panel.background", new Color(255, 228, 240));
-      UIManager.put("MenuBar.background", new Color(255, 204, 232));
 
 
       JMenuBar menuBar = createJMenuBar(controller);
