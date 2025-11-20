@@ -7,12 +7,14 @@ import javax.swing.JOptionPane;
 public class OpenHandler extends CommandHandler {
   private File file;
   private Viewer viewer;
+  private Controller controller;
   private StringBuilder container;
   private FileInputStream fin;
   private BufferedInputStream bin;
 
-  public OpenHandler(Viewer viewer) {
+  public OpenHandler(Viewer viewer, Controller controller) {
     this.viewer = viewer;
+    this.controller = controller;
     container = new StringBuilder();
   }
 
@@ -31,6 +33,7 @@ public class OpenHandler extends CommandHandler {
         }
         viewer.update(container.toString());
         container.setLength(0);
+        controller.setCurrentFile(file);
 
       } catch (IOException ioe) {
         System.out.println("Unable to open file: " + ioe.getMessage());
