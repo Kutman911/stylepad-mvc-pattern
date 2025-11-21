@@ -749,6 +749,11 @@ public class Viewer {
     }
   }
 
+  public JTextPane getTextArea() {
+    return textPane;
+  }
+
+
   private JToolBar createToolBar(Controller controller) {
     JToolBar toolBar = new JToolBar();
     toolBar.setFloatable(false);

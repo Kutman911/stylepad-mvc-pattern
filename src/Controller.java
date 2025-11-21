@@ -18,10 +18,12 @@ public class Controller implements ActionListener {
   private Map<String, CommandHandler> map;
 
   public Controller(Viewer viewer) {
+
     this.viewer = viewer;
     this.fileSynchronizer = new FileSynchronizer(viewer);
     map = new HashMap<>();
     SaveHandler saveHandler = new SaveHandler(viewer);
+    
     map.put("Save_Document", saveHandler);
     map.put("New_Document", new NewHandler(viewer, saveHandler));
     map.put("SaveAs_Document", new SaveAsHandler(viewer, saveHandler, this));
@@ -43,6 +45,7 @@ public class Controller implements ActionListener {
     map.put("Open_Image", new OpenImageHandler(viewer));
     map.put("Find_Text", new FindTextHandler(viewer));
     map.put("Go_To_Line", new GoToLineHandler(viewer));
+    map.put("Select_All_Text", new SelectAllHandler(viewer));
 
   }
 
