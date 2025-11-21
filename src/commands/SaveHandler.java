@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.io.File;
@@ -31,7 +33,7 @@ public class SaveHandler extends CommandHandler {
       }
   }
 
-  void command() {
+  public void command() {
       if (currentFile == null) {
           currentFile = viewer.showFileDialog("Save");
           if (currentFile == null) {

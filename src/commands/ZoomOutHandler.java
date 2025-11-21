@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 
 public class ZoomOutHandler extends CommandHandler {
 
@@ -7,7 +9,7 @@ public class ZoomOutHandler extends CommandHandler {
         this.viewer = viewer;
     }
 
-    void command() {
+    public void command() {
         viewer.zoomOut();
     }
 }

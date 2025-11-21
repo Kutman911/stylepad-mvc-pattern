@@ -1,4 +1,5 @@
-
+package commands;
+import src.*;
 public class ToggleCharCounterHandler extends CommandHandler {
 
     private Viewer viewer;
@@ -6,7 +7,7 @@ public class ToggleCharCounterHandler extends CommandHandler {
     public ToggleCharCounterHandler(Viewer viewer) {
         this.viewer = viewer;
     }
-    void command() {
+    public void command() {
         boolean next = !viewer.isCharCounterVisible();
         viewer.setCharCounterVisible(next);
     }

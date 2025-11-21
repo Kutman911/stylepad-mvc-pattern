@@ -1,3 +1,5 @@
+package src;
+import commands.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -23,7 +25,7 @@ public class Controller implements ActionListener {
     this.fileSynchronizer = new FileSynchronizer(viewer);
     map = new HashMap<>();
     SaveHandler saveHandler = new SaveHandler(viewer);
-    
+
     map.put("Save_Document", saveHandler);
     map.put("New_Document", new NewHandler(viewer, saveHandler));
     map.put("SaveAs_Document", new SaveAsHandler(viewer, saveHandler, this));

@@ -1,4 +1,5 @@
-
+package commands;
+import src.*;
 public class ToggleStatusBarHandler extends CommandHandler {
 
     private Viewer viewer;
@@ -6,7 +7,7 @@ public class ToggleStatusBarHandler extends CommandHandler {
     public ToggleStatusBarHandler(Viewer viewer) {
         this.viewer = viewer;
     }
-    void command() {
+    public void command() {
         boolean next = !viewer.isStatusBarVisible();
         viewer.setStatusBarVisible(next);
     }

@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 public class TimeAndDateHandler extends CommandHandler {
   private final Viewer viewer;
 
@@ -5,7 +7,7 @@ public class TimeAndDateHandler extends CommandHandler {
     this.viewer = viewer;
   }
 
-  void command() {
+  public void command() {
     viewer.insertTimeAndDate();
   }
 }

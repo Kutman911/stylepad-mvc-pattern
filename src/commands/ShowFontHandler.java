@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 public class ShowFontHandler extends CommandHandler {
   private Viewer viewer;
 
@@ -5,7 +7,7 @@ public class ShowFontHandler extends CommandHandler {
     this.viewer = viewer;
   }
 
-  void command() {
+  public void command() {
     viewer.showFontDialog();
   }
 }

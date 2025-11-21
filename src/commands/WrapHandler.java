@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.AbstractDocument;
@@ -22,7 +24,7 @@ public class WrapHandler extends CommandHandler {
         this.viewer = viewer;
     }
 
-    void command() {
+    public void command() {
         isWrapEnabled = !isWrapEnabled;
 
         JTextPane textPane = viewer.getTextPane();
@@ -45,7 +47,7 @@ public class WrapHandler extends CommandHandler {
         );
     }
 
-    static class WrapEditorKit extends StyledEditorKit {
+    public static class WrapEditorKit extends StyledEditorKit {
         public ViewFactory getViewFactory() {
             return new CustomViewFactory();
         }
@@ -71,7 +73,7 @@ public class WrapHandler extends CommandHandler {
         }
     }
 
-    static class WrapLabelView extends LabelView {
+    public static class WrapLabelView extends LabelView {
         public WrapLabelView(Element element) {
             super(element);
         }

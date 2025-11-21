@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;

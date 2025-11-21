@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 
 public class ExitHandler extends CommandHandler {
 

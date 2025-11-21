@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -129,7 +131,7 @@ public class FindDialog extends JDialog {
     public void setVisible(boolean visible) {
         if (visible) {
             setLocationRelativeTo(viewer.getFrame());
-            searchStartIndex = textPane.getSelectionEnd(); 
+            searchStartIndex = textPane.getSelectionEnd();
         }
         super.setVisible(visible);
     }

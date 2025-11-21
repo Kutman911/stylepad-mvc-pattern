@@ -1,3 +1,6 @@
+package commands;
+import src.*;
+
 public class FindTextHandler extends CommandHandler {
     private Viewer viewer;
 
@@ -5,7 +8,7 @@ public class FindTextHandler extends CommandHandler {
         this.viewer = viewer;
     }
 
-    void command() {
+    public void command() {
         viewer.showFindDialog();
     }
 }

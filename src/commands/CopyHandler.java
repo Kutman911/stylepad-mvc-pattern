@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 
 public class CopyHandler extends CommandHandler {
   private Viewer viewer;
@@ -6,7 +8,7 @@ public class CopyHandler extends CommandHandler {
     this.viewer = viewer;
   }
 
-  void command() {
+  public void command() {
     viewer.copyText();
   }
 }

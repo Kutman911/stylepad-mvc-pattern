@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 import javax.swing.JTextPane;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.Element;

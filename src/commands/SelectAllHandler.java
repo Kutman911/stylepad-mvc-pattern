@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 public class SelectAllHandler extends CommandHandler {
   private Viewer viewer;
 

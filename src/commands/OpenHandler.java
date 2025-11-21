@@ -1,3 +1,6 @@
+package commands;
+import src.*;
+import src.Controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
@@ -6,11 +9,11 @@ import javax.swing.JOptionPane;
 
 public class OpenHandler extends CommandHandler {
   private File file;
-  private Viewer viewer;
-  private Controller controller;
-  private StringBuilder container;
   private FileInputStream fin;
   private BufferedInputStream bin;
+  private final Viewer viewer;
+  private final Controller controller;
+  private final StringBuilder container;
 
   public OpenHandler(Viewer viewer, Controller controller) {
     this.viewer = viewer;

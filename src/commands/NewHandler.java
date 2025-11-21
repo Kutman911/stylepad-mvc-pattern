@@ -1,3 +1,5 @@
+package commands;
+import src.*;
 
 public class NewHandler extends CommandHandler {
     private Viewer viewer;
