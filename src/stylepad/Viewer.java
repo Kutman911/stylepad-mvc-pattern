@@ -1,5 +1,7 @@
 package stylepad;
 import stylepad.commands.*;
+import stylepad.ui.AboutDialog;
+import stylepad.ui.HelpDialog;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -269,11 +271,13 @@ public class Viewer {
       JMenu editMenu = createEditMenu(controller);
       JMenu formatMenu = createFormatMenu(controller);
       JMenu viewMenu = createViewMenu(controller);
+      JMenu helpMenu = createHelpMenu();
 
       menuBar.add(fileMenu);
       menuBar.add(editMenu);
       menuBar.add(formatMenu);
       menuBar.add(viewMenu);
+      menuBar.add(helpMenu);
 
       return menuBar;
     }
@@ -852,6 +856,35 @@ public class Viewer {
 
     textPane.repaint();
   }
+
+  private JMenu createHelpMenu() {
+    JMenu helpMenu = new JMenu("Help");
+    helpMenu.setMnemonic('H');
+
+    JMenuItem helpItem = new JMenuItem("View Help");
+    helpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+    helpItem.addActionListener(e -> showHelpDialog());
+    helpMenu.add(helpItem);
+
+    helpMenu.add(new JSeparator());
+
+    JMenuItem aboutItem = new JMenuItem("About StylePad");
+    aboutItem.addActionListener(e -> showAboutDialog());
+    helpMenu.add(aboutItem);
+
+    return helpMenu;
+  }
+
+  private void showHelpDialog() {
+    HelpDialog dialog = new HelpDialog(frame);
+    dialog.setVisible(true);
+  }
+
+  private void showAboutDialog() {
+    AboutDialog dialog = new AboutDialog(frame);
+    dialog.setVisible(true);
+  }
+
 
   public JFrame getFrame() {
     return frame;
