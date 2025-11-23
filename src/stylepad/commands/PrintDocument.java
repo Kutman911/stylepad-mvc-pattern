@@ -1,5 +1,4 @@
 package stylepad.commands;
-import stylepad.Viewer;      
 import javax.swing.JTextPane;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.Element;
@@ -18,7 +17,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
 import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,15 +59,32 @@ public class PrintDocument implements Printable {
         // Draw all elements on the current page
         for (PrintableElement printableElement : paginatedPages.get(pageIndex).getElements()) {
             if (printableElement.isImage()) {
-                graphics2D.drawImage(printableElement.getImage(), (int) pageXStart, currentYPosition,
+                int drawX = (int) pageXStart;
+
+                if (printableElement.getAlignment() == StyleConstants.ALIGN_CENTER) {
+                    drawX = (int) (pageXStart + (printableWidth - printableElement.getWidth()) / 2);
+                } else if (printableElement.getAlignment() == StyleConstants.ALIGN_RIGHT) {
+                    drawX = (int) (pageXStart + printableWidth - printableElement.getWidth());
+                }
+
+                graphics2D.drawImage(printableElement.getImage(), drawX, currentYPosition,
                         printableElement.getWidth(), printableElement.getHeight(), null);
+
                 currentYPosition = currentYPosition + printableElement.getHeight() + 10;
             } else {
-                graphics2D.drawString(printableElement.getText(), (int) pageXStart, currentYPosition);
+                int drawX = (int) pageXStart;
+                int textWidth = graphics2D.getFontMetrics().stringWidth(printableElement.getText());
+
+                if (printableElement.getAlignment() == StyleConstants.ALIGN_CENTER) {
+                    drawX = (int) (pageXStart + (printableWidth - textWidth) / 2);
+                } else if (printableElement.getAlignment() == StyleConstants.ALIGN_RIGHT) {
+                    drawX = (int) (pageXStart + printableWidth - textWidth);
+                }
+
+                graphics2D.drawString(printableElement.getText(), drawX, currentYPosition);
                 currentYPosition = currentYPosition + lineHeight;
             }
         }
-
         return PAGE_EXISTS;
     }
 
@@ -85,6 +100,8 @@ public class PrintDocument implements Printable {
                 AttributeSet attributes = characterElement.getAttributes();
                 Icon icon = StyleConstants.getIcon(attributes);
 
+                int alignment = StyleConstants.getAlignment(attributes);
+
                 if (icon != null) {
                     Image image = convertIconToImage(icon);
                     int imageWidth = image.getWidth(null);
@@ -98,12 +115,12 @@ public class PrintDocument implements Printable {
                         image = scaleImage(image, imageWidth, imageHeight);
                     }
 
-                    printableElements.add(PrintableElement.createImageElement(image, imageWidth, imageHeight));
+                    printableElements.add(PrintableElement.createImageElement(image, imageWidth, imageHeight, alignment));
                     currentPosition = characterElement.getEndOffset();
                 } else {
                     String textSegment = styledDocument.getText(currentPosition,
                             characterElement.getEndOffset() - currentPosition);
-                    printableElements.addAll(splitTextIntoLines(textSegment, graphics2D, maxLineWidth));
+                    printableElements.addAll(splitTextIntoLines(textSegment, graphics2D, maxLineWidth, alignment));
                     currentPosition = currentPosition + textSegment.length();
                 }
             }
@@ -115,7 +132,7 @@ public class PrintDocument implements Printable {
     }
 
     // Split long text into lines based on available width
-    private List<PrintableElement> splitTextIntoLines(String text, Graphics2D graphics2D, int maxLineWidth) {
+    private List<PrintableElement> splitTextIntoLines(String text, Graphics2D graphics2D, int maxLineWidth, int alignment) {
         List<PrintableElement> lines = new ArrayList<>();
         FontMetrics fontMetrics = graphics2D.getFontMetrics();
         BreakIterator wordBoundary = BreakIterator.getLineInstance();
@@ -131,10 +148,10 @@ public class PrintDocument implements Printable {
 
             if (fontMetrics.stringWidth(testLine) > maxLineWidth) {
                 if (fontMetrics.stringWidth(word) > maxLineWidth) {
-                  // Split very long words
-                    currentLineBuilder.append(splitLongWordIntoLines(word, fontMetrics, maxLineWidth, lines));
+                    // Split very long words
+                    currentLineBuilder.append(splitLongWordIntoLines(word, fontMetrics, maxLineWidth, lines, alignment));
                 } else {
-                    lines.add(PrintableElement.createTextElement(currentLineBuilder.toString().trim()));
+                    lines.add(PrintableElement.createTextElement(currentLineBuilder.toString().trim(), alignment));
                     currentLineBuilder = new StringBuilder(word.trim());
                 }
             } else {
@@ -146,19 +163,19 @@ public class PrintDocument implements Printable {
         }
 
         if (!currentLineBuilder.isEmpty()) {
-            lines.add(PrintableElement.createTextElement(currentLineBuilder.toString().trim()));
+            lines.add(PrintableElement.createTextElement(currentLineBuilder.toString().trim(), alignment));
         }
 
         return lines;
     }
 
     // Helper to split a long word that exceeds max line width
-    private String splitLongWordIntoLines(String word, FontMetrics fontMetrics, int maxLineWidth, List<PrintableElement> lines) {
+    private String splitLongWordIntoLines(String word, FontMetrics fontMetrics, int maxLineWidth, List<PrintableElement> lines, int alignment) {
         StringBuilder currentPart = new StringBuilder();
         for (char character : word.toCharArray()) {
             currentPart.append(character);
             if (fontMetrics.stringWidth(currentPart.toString()) > maxLineWidth) {
-                lines.add(PrintableElement.createTextElement(currentPart.substring(0, currentPart.length() - 1)));
+                lines.add(PrintableElement.createTextElement(currentPart.substring(0, currentPart.length() - 1), alignment));
                 currentPart = new StringBuilder(String.valueOf(character));
             }
         }
@@ -223,21 +240,23 @@ public class PrintDocument implements Printable {
         private final Image image;
         private final int width;
         private final int height;
+        private final int alignment;
 
-        private PrintableElement(String text, Image image, boolean imageFlag, int width, int height) {
+        private PrintableElement(String text, Image image, boolean imageFlag, int width, int height, int alignment) {
             this.text = text;
             this.image = image;
             this.imageFlag = imageFlag;
             this.width = width;
             this.height = height;
+            this.alignment = alignment;
         }
 
-        public static PrintableElement createTextElement(String text) {
-            return new PrintableElement(text, null, false, 0, 0);
+        public static PrintableElement createTextElement(String text, int alignment) {
+            return new PrintableElement(text, null, false, 0, 0, alignment);
         }
 
-        public static PrintableElement createImageElement(Image image, int width, int height) {
-            return new PrintableElement(null, image, true, width, height);
+        public static PrintableElement createImageElement(Image image, int width, int height, int alignment) {
+            return new PrintableElement(null, image, true, width, height, alignment);
         }
 
         public boolean isImage() {
@@ -258,6 +277,10 @@ public class PrintDocument implements Printable {
 
         public int getHeight() {
             return height;
+        }
+
+        public int getAlignment() {
+            return alignment;
         }
     }
 
