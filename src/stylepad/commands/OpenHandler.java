@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import javax.swing.JOptionPane;
 
 public class OpenHandler extends CommandHandler {
   private File file;

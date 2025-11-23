@@ -26,7 +26,7 @@ public class HelpDialog extends JDialog {
     UIManager.put("TabbedPane.selected", new Color(255, 204, 232));
     UIManager.put("TabbedPane.contentAreaColor", new Color(255, 228, 240));
     UIManager.put("TabbedPane.focus", new Color(255, 105, 180));
-    UIManager.put("TabbedPane.borderHightlightColor", new Color(255, 105, 180));
+    UIManager.put("TabbedPane.borderHighlightColor", new Color(255, 105, 180));
     UIManager.put("TabbedPane.darkShadow", new Color(255, 105, 180));
     UIManager.put("TabbedPane.light", new Color(255, 190, 220));
     UIManager.put("TabbedPane.highlight", new Color(255, 190, 220));

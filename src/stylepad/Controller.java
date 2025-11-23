@@ -1,14 +1,32 @@
 package stylepad;
-import stylepad.commands.*;
+import stylepad.commands.CommandHandler;
+import stylepad.commands.CopyHandler;
+import stylepad.commands.CutHandler;
+import stylepad.commands.DeleteHandler;
+import stylepad.commands.ExitHandler;
+import stylepad.commands.FileSynchronizer;
+import stylepad.commands.FindTextHandler;
+import stylepad.commands.GoToLineHandler;
+import stylepad.commands.NewHandler;
+import stylepad.commands.OpenHandler;
+import stylepad.commands.OpenImageHandler;
+import stylepad.commands.PasteHandler;
+import stylepad.commands.PrintDocumentHandler;
+import stylepad.commands.SaveAsHandler;
+import stylepad.commands.SaveHandler;
+import stylepad.commands.SelectAllHandler;
+import stylepad.commands.ShowFontHandler;
+import stylepad.commands.TimeAndDateHandler;
+import stylepad.commands.ToggleCharCounterHandler;
+import stylepad.commands.ToggleStatusBarHandler;
+import stylepad.commands.WrapHandler;
+import stylepad.commands.ZoomInHandler;
+import stylepad.commands.ZoomOutHandler;
+import stylepad.commands.ZoomResetHandler;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.FileInputStream;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import javax.swing.Timer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +40,7 @@ public class Controller implements ActionListener {
   public Controller(Viewer viewer) {
 
     this.viewer = viewer;
-    this.fileSynchronizer = new FileSynchronizer(viewer);
+    this.fileSynchronizer = new FileSynchronizer(viewer, this);
     map = new HashMap<>();
     SaveHandler saveHandler = new SaveHandler(viewer);
 
