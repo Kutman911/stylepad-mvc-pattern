@@ -5,7 +5,6 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JSeparator;
-import javax.swing.JComponent;
 import javax.swing.BorderFactory;
 import java.awt.BorderLayout;
 import java.awt.Color;
