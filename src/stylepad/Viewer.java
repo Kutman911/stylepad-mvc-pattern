@@ -4,7 +4,6 @@ import stylepad.commands.FontChooserDialog;
 import stylepad.commands.GoToLineDialog;
 import stylepad.commands.PrintDocument;
 import stylepad.commands.WrapHandler;
-import stylepad.commands.CyrillicStyledDocument;
 import stylepad.ui.AboutDialog;
 import stylepad.ui.HelpDialog;
 import java.awt.Font;
@@ -120,13 +119,8 @@ public class Viewer {
       Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
       Color colorTextArea = Color.BLACK;
 
-      Font latin = new Font(currentFontFamily, currentFontStyle, currentFontSize);
-      Font cyrillic = new Font("Arial", Font.PLAIN, currentFontSize);
-
       textPane = new JTextPane();
       textPane.setEditorKit(new WrapHandler.WrapEditorKit());
-      CyrillicStyledDocument doc = new CyrillicStyledDocument(latin, cyrillic);
-      textPane.setDocument(doc);
       textPane.setFont(fontTextArea);
       textPane.setForeground(colorTextArea);
       textPane.setBackground(Color.WHITE);
@@ -617,50 +611,14 @@ public class Viewer {
       currentFontStyle = style;
       currentFontSize = size;
 
-      int caret = textPane.getCaretPosition();
+      Font newFont = new Font(currentFontFamily, currentFontStyle, currentFontSize);
+
       int selectionStart = textPane.getSelectionStart();
       int selectionEnd = textPane.getSelectionEnd();
 
-      String text = textPane.getText();
+      textPane.setFont(newFont);
+      textPane.select(selectionStart, selectionEnd);
 
-      Font latin = new Font(family, style, size);
-      Font cyrillic = new Font("Arial", Font.PLAIN, size);
-
-      textPane.setFont(latin);
-
-      CyrillicStyledDocument doc = new CyrillicStyledDocument(latin, cyrillic);
-
-      try {
-        doc.insertString(0, text, null);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-
-      textPane.setDocument(doc);
-
-      textPane.getDocument().addDocumentListener(new DocumentListener() {
-      public void changedUpdate(DocumentEvent e) {
-        updateCharCountLabel();
-      }
-
-      public void removeUpdate(DocumentEvent e) {
-        updateCharCountLabel();
-      }
-
-      public void insertUpdate(DocumentEvent e) {
-        updateCharCountLabel();
-      }
-    });
-
-      doc.addUndoableEditListener(undoManager);
-
-      if (selectionStart != selectionEnd) {
-        textPane.select(selectionStart, selectionEnd);
-      }
-
-      textPane.setCaretPosition(Math.min(caret, textPane.getDocument().getLength()));
-
-      updateCharCountLabel();
       updateZoomLabel();
       textPane.repaint();
     }

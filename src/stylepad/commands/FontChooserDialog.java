@@ -29,19 +29,28 @@ public class FontChooserDialog extends JDialog {
   private boolean ignoreSearch = false;
   private GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
+
   private String[] getDisplayableFonts() {
     List<String> list = new ArrayList<>();
 
-    for (String name : windowsFonts.getAvailableFontFamilyNames()) {
-      Font font = new Font(name, Font.PLAIN, 14);
+    String latinSample = "AaBbCc";
+    String cyrSample = "АаБбВвГгДд";
 
-      if (font.canDisplayUpTo("AaBbCc") == -1) {
-        list.add(name);
-      }
+    for (String name : windowsFonts.getAvailableFontFamilyNames()) {
+        Font font = new Font(name, Font.PLAIN, 16);
+
+        boolean latinOK = font.canDisplayUpTo(latinSample) == -1;
+
+        boolean cyrOK = font.canDisplayUpTo(cyrSample) == -1;
+
+        if (latinOK && cyrOK) {
+            list.add(name);
+        }
     }
 
     return list.toArray(new String[0]);
-  }
+}
+
 
   private String[] fontNames = getDisplayableFonts();
   private int[] fontStyleValues = {Font.PLAIN, Font.BOLD, Font.ITALIC, Font.BOLD | Font.ITALIC};
