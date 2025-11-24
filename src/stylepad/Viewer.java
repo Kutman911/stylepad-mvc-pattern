@@ -4,6 +4,8 @@ import stylepad.commands.FontChooserDialog;
 import stylepad.commands.GoToLineDialog;
 import stylepad.commands.PrintDocument;
 import stylepad.commands.WrapHandler;
+import stylepad.ui.MenuBarFactory;
+import stylepad.ui.ToolBarFactory;
 import stylepad.ui.AboutDialog;
 import stylepad.ui.HelpDialog;
 import java.awt.Font;
@@ -113,8 +115,8 @@ public class Viewer {
       UIManager.put("Panel.background", new Color(255, 228, 240));
 
 
-      JMenuBar menuBar = createJMenuBar(controller);
-      JToolBar toolBar = createToolBar(controller);
+      JMenuBar menuBar = MenuBarFactory.createJMenuBar(controller, this);
+      JToolBar toolBar = ToolBarFactory.createToolBar(controller, this);
 
       Font fontTextArea = new Font(currentFontFamily, currentFontStyle, currentFontSize);
       Color colorTextArea = Color.BLACK;
@@ -143,7 +145,6 @@ public class Viewer {
 
       updateCharCountLabel();
       initZoomKeyBindings();
-      initZoomMouseWheel();
 
       undoManager = new UndoManager();
 
@@ -176,6 +177,7 @@ public class Viewer {
 
       JScrollPane scrollPane = new JScrollPane(textPane);
       scrollPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2, new Color(255, 105, 180)));
+      initZoomMouseWheel(scrollPane);
 
       statusBar = new JPanel(new GridBagLayout());
       statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(255, 105, 180)));
@@ -276,135 +278,6 @@ public class Viewer {
         }
     }
 
-    private JMenuBar createJMenuBar(Controller controller) {
-      JMenuBar menuBar = new JMenuBar();
-
-      JMenu fileMenu = createFileMenu(controller);
-      JMenu editMenu = createEditMenu(controller);
-      JMenu formatMenu = createFormatMenu(controller);
-      JMenu viewMenu = createViewMenu(controller);
-      JMenu helpMenu = createHelpMenu();
-
-      menuBar.add(fileMenu);
-      menuBar.add(editMenu);
-      menuBar.add(formatMenu);
-      menuBar.add(viewMenu);
-      menuBar.add(helpMenu);
-
-      return menuBar;
-    }
-
-
-    private JMenu createFileMenu(Controller controller) {
-
-      JMenuItem newDocument = new JMenuItem("New",new ImageIcon(getClass().getResource("Images/new.png")));
-      newDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-      newDocument.addActionListener(controller);
-      newDocument.setActionCommand("New_Document");
-
-      JMenuItem openDocument = new JMenuItem("Open ...", new ImageIcon(getClass().getResource("Images/open.png")));
-      openDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-      openDocument.addActionListener(controller);
-      openDocument.setActionCommand("Open_Document");
-
-      JMenuItem saveDocument = new JMenuItem("Save", new ImageIcon(getClass().getResource("Images/save.png")));
-      saveDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-      saveDocument.addActionListener(controller);
-      saveDocument.setActionCommand("Save_Document");
-
-      JMenuItem saveAsDocument = new JMenuItem("Save As ...", new ImageIcon(getClass().getResource("Images/save_as.png")));
-      saveAsDocument.addActionListener(controller);
-      saveAsDocument.setActionCommand("SaveAs_Document");
-
-      JMenuItem printDocument = new JMenuItem("Print ...", new ImageIcon(getClass().getResource("Images/print.png")));
-      printDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
-      printDocument.addActionListener(controller);
-      printDocument.setActionCommand("Print_Document");
-
-      JMenuItem imageDocument = new JMenuItem("Open Image", new ImageIcon(getClass().getResource("Images/open.png")));
-      imageDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
-      imageDocument.addActionListener(controller);
-      imageDocument.setActionCommand("Open_Image");
-
-      JMenuItem closeProgram = new JMenuItem("Exit");
-      imageDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
-      closeProgram.addActionListener(controller);
-      closeProgram.setActionCommand("Exit");
-
-      JMenu fileMenu = new JMenu("File");
-      fileMenu.setMnemonic('F');
-      fileMenu.add(newDocument);
-      fileMenu.add(openDocument);
-      fileMenu.add(saveDocument);
-      fileMenu.add(saveAsDocument);
-      fileMenu.add(new JSeparator());
-      fileMenu.add(imageDocument);
-      fileMenu.add(new JSeparator());
-      fileMenu.add(printDocument);
-      fileMenu.add(new JSeparator());
-      fileMenu.add(closeProgram);
-
-      return fileMenu;
-    }
-
-    private JMenu createEditMenu(Controller controller) {
-
-      JMenuItem cutText = new JMenuItem("Cut",new ImageIcon(getClass().getResource("Images/cut.png")));
-      cutText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-      cutText.addActionListener(controller);
-      cutText.setActionCommand("Cut_Text");
-
-      JMenuItem copyText = new JMenuItem("Copy", new ImageIcon(getClass().getResource("Images/copy.png")));
-      copyText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-      copyText.addActionListener(controller);
-      copyText.setActionCommand("Copy_Text");
-
-      JMenuItem pasteText = new JMenuItem("Paste", new ImageIcon(getClass().getResource("Images/paste.png")));
-      pasteText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
-      pasteText.addActionListener(controller);
-      pasteText.setActionCommand("Paste_Text");
-
-      JMenuItem deleteText = new JMenuItem("Delete", new ImageIcon(getClass().getResource("Images/delete.png")));
-      deleteText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
-      deleteText.addActionListener(controller);
-      deleteText.setActionCommand("Delete_Text");
-
-      JMenuItem findText = new JMenuItem("Find", new ImageIcon(getClass().getResource("Images/find.png")));
-      findText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
-      findText.addActionListener(controller);
-      findText.setActionCommand("Find_Text");
-
-      JMenuItem goToLine = new JMenuItem("Go", new ImageIcon(getClass().getResource("Images/go.png")));
-      goToLine.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
-      goToLine.addActionListener(controller);
-      goToLine.setActionCommand("Go_To_Line");
-
-      JMenuItem selectAllText = new JMenuItem("Select All Text", new ImageIcon(getClass().getResource("Images/select_all.png")));
-      selectAllText.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
-      selectAllText.addActionListener(controller);
-      selectAllText.setActionCommand("Select_All_Text");
-
-      JMenuItem timeAndDate = new JMenuItem("Time and date", new ImageIcon(getClass().getResource("Images/time_and_date.png")));
-      timeAndDate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
-      timeAndDate.addActionListener(controller);
-      timeAndDate.setActionCommand("Time_And_Date");
-
-      JMenu editMenu = new JMenu("Edit");
-      editMenu.setMnemonic('E');
-      editMenu.add(cutText);
-      editMenu.add(copyText);
-      editMenu.add(pasteText);
-      editMenu.add(deleteText);
-      editMenu.add(new JSeparator());
-      editMenu.add(findText);
-      editMenu.add(goToLine);
-      editMenu.add(new JSeparator());
-      editMenu.add(selectAllText);
-      editMenu.add(timeAndDate);
-
-      return editMenu;
-    }
-
     public void insertTimeAndDate() {
       DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
       String stamp = LocalDateTime.now().format(fmt);
@@ -459,67 +332,6 @@ public class Viewer {
     }
   }
 
-
-
-
-  private JMenu createFormatMenu(Controller controller) {
-      JMenu formatMenu = new JMenu("Format");
-
-      JMenuItem wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));
-      wrapJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
-      wrapJMenuItem.addActionListener(controller);
-      wrapJMenuItem.setActionCommand("Wrap");
-
-      JMenuItem fontJMenuItem = new JMenuItem("Font", new ImageIcon(""));
-      fontJMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
-      fontJMenuItem.addActionListener(controller);
-      fontJMenuItem.setActionCommand("Show_Font_Dialog");
-
-      formatMenu.setMnemonic('F');
-      formatMenu.add(wrapJMenuItem);
-      formatMenu.add(fontJMenuItem);
-
-      return formatMenu;
-  }
-
-    private JMenu createViewMenu(Controller controller) {
-      JMenu viewMenu = new JMenu("View");
-
-      JMenuItem toggleStatus = new JMenuItem("Status Bar On/Off");
-      toggleStatus.addActionListener(controller);
-      toggleStatus.setActionCommand("View_Toggle_StatusBar");
-
-      JMenuItem toggleChars = new JMenuItem("Char Counter On/Off");
-      toggleChars.addActionListener(controller);
-      toggleChars.setActionCommand("View_Toggle_CharCounter");
-
-      JMenuItem zoomIn = new JMenuItem("Zoom In");
-      zoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-      zoomIn.addActionListener(controller);
-      zoomIn.setActionCommand("View_ZoomIn");
-
-      JMenuItem zoomOut = new JMenuItem("Zoom Out");
-      zoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
-      zoomOut.addActionListener(controller);
-      zoomOut.setActionCommand("View_ZoomOut");
-
-      JMenuItem zoomReset = new JMenuItem("Reset Zoom");
-      zoomReset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
-      zoomReset.addActionListener(controller);
-      zoomReset.setActionCommand("View_ZoomReset");
-
-      viewMenu.setMnemonic('V');
-
-      viewMenu.add(toggleStatus);
-      viewMenu.add(toggleChars);
-      viewMenu.add(new JSeparator());
-      viewMenu.add(zoomIn);
-      viewMenu.add(zoomOut);
-      viewMenu.add(zoomReset);
-
-      return viewMenu;
-    }
-
     public boolean isStatusBarVisible() {
       return statusBar != null && statusBar.isVisible();
     }
@@ -562,20 +374,20 @@ public class Viewer {
       InputMap im = textPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
       ActionMap am = textPane.getActionMap();
 
-      KeyStroke ctrlPlusMain   = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS,  InputEvent.CTRL_DOWN_MASK);
-      KeyStroke ctrlPlusNumpad = KeyStroke.getKeyStroke(KeyEvent.VK_ADD,     InputEvent.CTRL_DOWN_MASK);
-      KeyStroke ctrlMinusMain   = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,    InputEvent.CTRL_DOWN_MASK);
+      KeyStroke ctrlPlusMain   = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.CTRL_DOWN_MASK);
+      KeyStroke ctrlPlusNumpad = KeyStroke.getKeyStroke(KeyEvent.VK_ADD, InputEvent.CTRL_DOWN_MASK);
+      KeyStroke ctrlMinusMain   = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_DOWN_MASK);
       KeyStroke ctrlMinusNumpad = KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_DOWN_MASK);
       KeyStroke ctrlZero = KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.CTRL_DOWN_MASK);
 
-      im.put(ctrlPlusMain,   "zoomIn");
+      im.put(ctrlPlusMain, "zoomIn");
       im.put(ctrlPlusNumpad, "zoomIn");
-      im.put(ctrlMinusMain,   "zoomOut");
+      im.put(ctrlMinusMain, "zoomOut");
       im.put(ctrlMinusNumpad, "zoomOut");
       im.put(ctrlZero, "zoomReset");
 
-      am.put("zoomIn",   new ZoomInAction());
-      am.put("zoomOut",  new ZoomOutAction());
+      am.put("zoomIn", new ZoomInAction());
+      am.put("zoomOut", new ZoomOutAction());
       am.put("zoomReset", new ZoomResetAction());
     }
 
@@ -596,9 +408,8 @@ public class Viewer {
         resetZoom();
       }
     }
-
-    private void initZoomMouseWheel() {
-      textPane.addMouseWheelListener(new ZoomMouseWheelListener());
+    private void initZoomMouseWheel(JScrollPane scrollPane) {
+      scrollPane.addMouseWheelListener(new ZoomMouseWheelListener());
     }
 
     private class ZoomMouseWheelListener implements MouseWheelListener {
@@ -771,75 +582,6 @@ public class Viewer {
     return textPane;
   }
 
-
-  private JToolBar createToolBar(Controller controller) {
-    JToolBar toolBar = new JToolBar();
-    toolBar.setFloatable(false);
-    toolBar.setBackground(new Color(255, 245, 250));
-    toolBar.setBorder(BorderFactory.createMatteBorder(0, 2, 2, 2, new Color(255, 105, 180)));
-    toolBar.setMargin(new Insets(4, 4, 4, 4));
-
-    JButton newButton   = createToolbarButton("Images/new.png",   "New",   "New_Document",  controller);
-    JButton openButton  = createToolbarButton("Images/open.png",  "Open",  "Open_Document", controller);
-    JButton saveButton  = createToolbarButton("Images/save.png",  "Save",  "Save_Document", controller);
-
-    JButton cutButton   = createToolbarButton("Images/cut.png",   "Cut",   "Cut_Text",      controller);
-    JButton copyButton  = createToolbarButton("Images/copy.png",  "Copy",  "Copy_Text",     controller);
-    JButton pasteButton = createToolbarButton("Images/paste.png", "Paste", "Paste_Text",    controller);
-
-    JButton alignLeftButton   = createToolbarButton("Images/align_left.png",   "Align left");
-    JButton alignCenterButton = createToolbarButton("Images/align_center.png", "Align center");
-    JButton alignRightButton  = createToolbarButton("Images/align_right.png",  "Align right");
-
-    alignLeftButton.addActionListener(e -> alignLeft());
-    alignCenterButton.addActionListener(e -> alignCenter());
-    alignRightButton.addActionListener(e -> alignRight());
-
-    toolBar.add(newButton);
-    toolBar.add(openButton);
-    toolBar.add(saveButton);
-    toolBar.add(cutButton);
-    toolBar.add(copyButton);
-    toolBar.add(pasteButton);
-    toolBar.add(alignLeftButton);
-    toolBar.add(alignCenterButton);
-    toolBar.add(alignRightButton);
-
-    return toolBar;
-  }
-
-  private JButton createBaseToolbarButton(String iconPath, String tooltip) {
-    JButton button = new JButton(new ImageIcon(getClass().getResource(iconPath)));
-    button.setToolTipText(tooltip);
-    button.setFocusable(false);
-    button.setOpaque(true);
-
-    button.setBackground(new Color(255, 240, 245));
-    button.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-
-    button.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseEntered(java.awt.event.MouseEvent evt) {
-        button.setBackground(new Color(255, 220, 235));
-      }
-      public void mouseExited(java.awt.event.MouseEvent evt) {
-        button.setBackground(new Color(255, 240, 245));
-      }
-    });
-
-    return button;
-  }
-
-  private JButton createToolbarButton(String iconPath, String tooltip, String actionCommand, Controller controller) {
-    JButton button = createBaseToolbarButton(iconPath, tooltip);
-    button.addActionListener(controller);
-    button.setActionCommand(actionCommand);
-    return button;
-  }
-
-  private JButton createToolbarButton(String iconPath, String tooltip) {
-    return createBaseToolbarButton(iconPath, tooltip);
-  }
-
   public void alignLeft() {
     applyAlignment(StyleConstants.ALIGN_LEFT);
   }
@@ -869,34 +611,15 @@ public class Viewer {
     textPane.repaint();
   }
 
-  private JMenu createHelpMenu() {
-    JMenu helpMenu = new JMenu("Help");
-    helpMenu.setMnemonic('H');
-
-    JMenuItem helpItem = new JMenuItem("View Help");
-    helpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
-    helpItem.addActionListener(e -> showHelpDialog());
-    helpMenu.add(helpItem);
-
-    helpMenu.add(new JSeparator());
-
-    JMenuItem aboutItem = new JMenuItem("About StylePad");
-    aboutItem.addActionListener(e -> showAboutDialog());
-    helpMenu.add(aboutItem);
-
-    return helpMenu;
-  }
-
-  private void showHelpDialog() {
+  public void showHelpDialog() {
     HelpDialog dialog = new HelpDialog(frame);
     dialog.setVisible(true);
   }
 
-  private void showAboutDialog() {
+  public void showAboutDialog() {
     AboutDialog dialog = new AboutDialog(frame);
     dialog.setVisible(true);
   }
-
 
   public JFrame getFrame() {
     return frame;
