@@ -26,6 +26,7 @@ public class FontChooserDialog extends JDialog {
   private boolean ignoreSearch = false;
   private GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
   private String[] fontNames = windowsFonts.getAvailableFontFamilyNames();
+  private int[] fontStyleValues = {Font.PLAIN, Font.BOLD, Font.ITALIC, Font.BOLD | Font.ITALIC};
 
   private Integer[] generateSizes() {
     List<Integer> sizes = new ArrayList<>();
@@ -39,6 +40,30 @@ public class FontChooserDialog extends JDialog {
     }
 
     return sizes.toArray(new Integer[0]);
+  }
+
+  private String[] getFontStyleNames() {
+    int[] styles = {Font.PLAIN, Font.BOLD, Font.ITALIC, Font.BOLD | Font.ITALIC};
+
+    String[] names = new String[styles.length];
+
+    for (int i = 0; i < styles.length; i++) {
+      int style = styles[i];
+
+      if (style == Font.PLAIN) {
+        names[i] = "Regular";
+      } else if (style == Font.BOLD) {
+        names[i] = "Bold";
+      } else if (style == Font.ITALIC) {
+        names[i] = "Italic";
+      } else if (style == (Font.BOLD | Font.ITALIC)) {
+        names[i] = "Bold Italic";
+      } else {
+        names[i] = "Unknown";
+      }
+    }
+
+    return names;
   }
 
   private void filterFontList(JList<String> fontList, String filter, String[] allFonts) {
@@ -120,7 +145,7 @@ public class FontChooserDialog extends JDialog {
     fontStyleField.setEditable(false);
     add(fontStyleField);
 
-    String[] fontStyles = {"Regular", "Bold", "Italic", "Bold Italic"};
+    String[] fontStyles = getFontStyleNames();
     JList<String> fontStyleList = new JList<>(fontStyles);
     fontStyleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     fontStyleList.setSelectedIndex(fontStyle);
@@ -221,7 +246,7 @@ public class FontChooserDialog extends JDialog {
     fontStyleList.addListSelectionListener(
         e -> {
           if (e.getValueIsAdjusting()) {
-            currentFontStyle = fontStyleList.getSelectedIndex();
+            currentFontStyle = fontStyleValues[fontStyleList.getSelectedIndex()];
             fontStyleField.setText(fontStyleList.getSelectedValue());
             previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
           }
