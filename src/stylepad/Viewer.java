@@ -666,9 +666,6 @@ public class Viewer {
     }
 
 
-
-
-
     public File showFileDialog(String status) {
       File file = null;
       int returnValue;

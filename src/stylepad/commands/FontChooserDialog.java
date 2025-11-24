@@ -1,9 +1,12 @@
 package stylepad.commands;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -25,7 +28,22 @@ public class FontChooserDialog extends JDialog {
   private boolean approved = false;
   private boolean ignoreSearch = false;
   private GraphicsEnvironment windowsFonts = GraphicsEnvironment.getLocalGraphicsEnvironment();
-  private String[] fontNames = windowsFonts.getAvailableFontFamilyNames();
+
+  private String[] getDisplayableFonts() {
+    List<String> list = new ArrayList<>();
+
+    for (String name : windowsFonts.getAvailableFontFamilyNames()) {
+      Font font = new Font(name, Font.PLAIN, 14);
+
+      if (font.canDisplayUpTo("AaBbCc") == -1) {
+        list.add(name);
+      }
+    }
+
+    return list.toArray(new String[0]);
+  }
+
+  private String[] fontNames = getDisplayableFonts();
   private int[] fontStyleValues = {Font.PLAIN, Font.BOLD, Font.ITALIC, Font.BOLD | Font.ITALIC};
 
   private Integer[] generateSizes() {
@@ -105,7 +123,6 @@ public class FontChooserDialog extends JDialog {
     setLocation(x + 100, y + 50);
     setResizable(false);
 
-    // Sample
     JLabel sampleLabel = new JLabel("Sample");
     sampleLabel.setBounds(179, 230, 100, 25);
     add(sampleLabel);
@@ -118,7 +135,6 @@ public class FontChooserDialog extends JDialog {
     previewText.setFont(new Font(currentFontFamily, currentFontStyle, currentFontSize));
     samplePanel.add(previewText, BorderLayout.CENTER);
 
-    // Font
     JLabel fontLabel = new JLabel("Font:");
     fontLabel.setBounds(20, 20, 90, 25);
     add(fontLabel);
@@ -131,11 +147,28 @@ public class FontChooserDialog extends JDialog {
     fontList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     fontList.setSelectedValue(currentFontFamily, true);
 
+    fontList.setCellRenderer(
+        (list, value, index, isSelected, cellHasFocus) -> {
+          JLabel label = new JLabel(value);
+          label.setOpaque(true);
+          label.setFont(new Font(value, Font.PLAIN, 14));
+          label.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(199, 21, 133)));
+
+          if (isSelected) {
+            label.setBackground(list.getSelectionBackground());
+            label.setForeground(list.getSelectionForeground());
+          } else {
+            label.setBackground(list.getBackground());
+            label.setForeground(list.getForeground());
+          }
+
+          return label;
+        });
+
     JScrollPane fontScroll = new JScrollPane(fontList);
     fontScroll.setBounds(20, 68, 220, 150);
     add(fontScroll);
 
-    // Style
     JLabel fontStyleLabel = new JLabel("Font Style:");
     fontStyleLabel.setBounds(260, 20, 90, 25);
     add(fontStyleLabel);
@@ -154,7 +187,6 @@ public class FontChooserDialog extends JDialog {
     styleScroll.setBounds(260, 68, 90, 150);
     add(styleScroll);
 
-    // Size
     JLabel sizeLabel = new JLabel("Size:");
     sizeLabel.setBounds(380, 20, 90, 25);
     add(sizeLabel);
@@ -224,7 +256,6 @@ public class FontChooserDialog extends JDialog {
               }
             });
 
-    // Listeners
     fontList.addListSelectionListener(
         e -> {
           if (e.getValueIsAdjusting()) {
@@ -268,7 +299,6 @@ public class FontChooserDialog extends JDialog {
           }
         });
 
-    // Buttons
     JButton buttonOk = new JButton("OK");
     buttonOk.setBounds(260, 390, 100, 50);
     add(buttonOk);
