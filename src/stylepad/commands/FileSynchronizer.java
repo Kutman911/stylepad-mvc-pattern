@@ -1,6 +1,5 @@
 package stylepad.commands;
 import stylepad.Controller;
-import stylepad.DocumentModel;
 import stylepad.Viewer;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -24,8 +23,6 @@ public class FileSynchronizer implements ActionListener {
     this.timer.start();
   }
 
-  public FileSynchronizer(Viewer viewer, DocumentModel documentModel) {
-  }
 
   public void setCurrentFile(File file) {
     this.currentFile = file;
