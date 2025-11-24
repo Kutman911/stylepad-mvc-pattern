@@ -434,7 +434,7 @@ public class Viewer {
     }
 
 
-    public void insertImage(File imageFile, int width, int height) {
+  public void insertImage(File imageFile, int width, int height) {
     try {
       if (imageFile != null && imageFile.exists()) {
 
@@ -463,11 +463,12 @@ public class Viewer {
               JOptionPane.ERROR_MESSAGE);
       ex.printStackTrace();
     }
-}
+  }
 
 
 
-    private JMenu createFormatMenu(Controller controller) {
+
+  private JMenu createFormatMenu(Controller controller) {
       JMenu formatMenu = new JMenu("Format");
 
       JMenuItem wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));

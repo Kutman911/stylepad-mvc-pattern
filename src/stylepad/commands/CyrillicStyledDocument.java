@@ -1,11 +1,8 @@
 package stylepad.commands;
 import stylepad.Viewer;
 import java.awt.Font;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import javax.swing.text.*;
+import javax.swing.Icon;
 
 public class CyrillicStyledDocument extends DefaultStyledDocument {
 
@@ -19,6 +16,13 @@ public class CyrillicStyledDocument extends DefaultStyledDocument {
 
   public void insertString(int offset, String str, AttributeSet as) throws BadLocationException {
     if (str == null) {
+      return;
+    }
+
+
+    if (as != null && (as.isDefined(StyleConstants.IconAttribute) ||
+            as.getAttribute(StyleConstants.IconAttribute) != null)) {
+      super.insertString(offset, str, as);
       return;
     }
 
