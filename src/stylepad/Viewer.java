@@ -154,10 +154,22 @@ public class Viewer {
               "Undo"
       );
       textPane.getActionMap().put("Undo", new AbstractAction() {
-          @Override
           public void actionPerformed(ActionEvent e) {
               if (undoManager.canUndo()) {
                   undoManager.undo();
+              }
+          }
+      });
+
+      textPane.getInputMap(JComponent.WHEN_FOCUSED).put(
+        KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
+        "Redo"
+      );
+
+      textPane.getActionMap().put("Redo", new AbstractAction() {
+          public void actionPerformed(ActionEvent e) {
+              if (undoManager.canRedo()) {
+                  undoManager.redo();
               }
           }
       });
@@ -416,7 +428,7 @@ public class Viewer {
     }
 
 
-    public void insertImage(File imageFile, int width, int height) {
+  public void insertImage(File imageFile, int width, int height) {
     try {
       if (imageFile != null && imageFile.exists()) {
 
@@ -445,11 +457,12 @@ public class Viewer {
               JOptionPane.ERROR_MESSAGE);
       ex.printStackTrace();
     }
-}
+  }
 
 
 
-    private JMenu createFormatMenu(Controller controller) {
+
+  private JMenu createFormatMenu(Controller controller) {
       JMenu formatMenu = new JMenu("Format");
 
       JMenuItem wrapJMenuItem = new JMenuItem("Wrap", new ImageIcon(""));

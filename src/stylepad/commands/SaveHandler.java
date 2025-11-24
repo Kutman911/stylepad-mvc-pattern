@@ -20,6 +20,11 @@ public class SaveHandler extends CommandHandler {
   public void setCurrentFile(File file) {
       this.currentFile = file;
   }
+
+  public File getCurrentFile() {
+      return currentFile;
+  }
+
   private boolean saveToFile(File file, Document content) {
       try {
           String text = content.getText(0, content.getLength());
