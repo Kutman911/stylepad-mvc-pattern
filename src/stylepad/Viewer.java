@@ -160,10 +160,22 @@ public class Viewer {
               "Undo"
       );
       textPane.getActionMap().put("Undo", new AbstractAction() {
-          @Override
           public void actionPerformed(ActionEvent e) {
               if (undoManager.canUndo()) {
                   undoManager.undo();
+              }
+          }
+      });
+
+      textPane.getInputMap(JComponent.WHEN_FOCUSED).put(
+        KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
+        "Redo"
+      );
+
+      textPane.getActionMap().put("Redo", new AbstractAction() {
+          public void actionPerformed(ActionEvent e) {
+              if (undoManager.canRedo()) {
+                  undoManager.redo();
               }
           }
       });
