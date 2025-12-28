@@ -1,3 +1,6 @@
+package stylepad.commands;
+import stylepad.Viewer;      
+
 public class PrintDocumentHandler extends CommandHandler{
     private Viewer viewer;
 
@@ -5,7 +8,7 @@ public class PrintDocumentHandler extends CommandHandler{
         this.viewer = viewer;
     }
 
-    void command() {
+    public void command() {
         viewer.printDocument();
     }
 }
